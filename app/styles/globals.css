@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1370px) {
+  .Header{
+    padding-left: 18rem;
+    padding-right: 18rem;
+  }
+}

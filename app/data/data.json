@@ -1,0 +1,147 @@
+{
+    "wathYouGetHere": [
+        {
+            "id": 1,
+            "name": "Product 1",
+            "imageSrc": "/images/rectangle-25.png",
+            "description": "Craft Kits"
+        },
+        {
+            "id": 2,
+            "name": "Product 2",
+            "imageSrc": "/images/rectangle-27.png",
+            "description": "Throw Pillows"
+        },
+        {
+            "id": 3,
+            "name": "Product 3",
+            "imageSrc": "/images/rectangle-29.png",
+            "description": "Natural Glass"
+        },
+        {
+            "id": 4,
+            "name": "Product 4",
+            "imageSrc": "/images/rectangle-31.png",
+            "description": "Self-care"
+        },
+        {
+            "id": 5,
+            "name": "Product 5",
+            "imageSrc": "/images/rectangle-33.png",
+            "description": "Gift Ideas"
+        },
+        {
+            "id": 6,
+            "name": "Product 6",
+            "imageSrc": "/images/rectangle-35.png",
+            "description": "Wall Decor"
+        },
+        {
+            "id": 7,
+            "name": "Product 7",
+            "imageSrc": "/images/rectangle-37.png",
+            "description": "Wedding"
+        },
+        {
+            "id": 8,
+            "name": "Product 8",
+            "imageSrc": "/images/rectangle-39.png",
+            "description": "Life Style"
+        }
+    ],
+    "products": [
+        
+        {
+            "id": 1,
+            "name": "Bag",
+            "imageSrc": "/images/product-rectangle-73.png",
+            "description": "Distressed Tote Leather Bag Leather Bag",
+            "price": 216.27,
+            "Emphasis": false,
+            "colors": []
+        },
+        {
+            "id": 2,
+            "name": "Straps",
+            "imageSrc": "/images/rectangle-74.png",
+            "description": "Womens Cognac Leather Elastic Straps",
+            "price": 195.13,
+            "Emphasis": false,
+            "colors": []
+        },
+        {
+            "id": 3,
+            "name": "Bag",
+            "imageSrc": "/images/rectangle-75.png",
+            "description": "Distressed Tote Leather Bag Leather Bag",
+            "price": 24.99,
+            "Emphasis": false,
+            "colors": []
+        },
+        {
+            "id": 4,
+            "name": "shoes",
+            "imageSrc": "/images/rectangle-76.png",
+            "description": "High Top Canvas Shoes",
+            "price": 9.99,
+            "Emphasis": false,
+            "colors": []
+        },
+        {
+            "id": 5,
+            "name": "Rings",
+            "imageSrc": "/images/rectangle-77.png",
+            "description": "Rose Gold Moissanite Vintage Wedding Ring Set",
+            "price": 14.99,
+            "Emphasis": false,
+            "colors": []
+        },
+        {
+            "id": 6,
+            "name": "Bangle",
+            "imageSrc": "/images/rectangle-78.png",
+            "description": "Blue Topaz Bangle 24K Gold Plated Handmade",
+            "price": 29.99,
+            "Emphasis": false,
+            "colors": []
+        },
+        {
+            "id": 7,
+            "name": "Shoes",
+            "imageSrc": "/images/unsplash-m-7-c-qq-gj-b-nm-8.png",
+            "description": "Nike Air Max 270 React ENG",
+            "price": 1000.99,
+            "Emphasis": true,
+            "colors": []
+        },
+        {
+            "id": 8,
+            "name": "Light",
+            "imageSrc": "/images/candiero.png",
+            "description": "Rovena Riva Series 6 Pcs. Wide Seating Claret Red Chair",
+            "price": 50.99,
+            "Emphasis": true,
+            "colors": ["#7CB93E", "#33ABC6", "#1CCD8D", "#3F65EA", "#F64A69", "#A635EC", "#F9A85D"]
+        },
+        {
+            "id": 9,
+            "name": "Iphone 12",
+            "imageSrc": "/images/iphone12.png",
+            "description": "Iphone 12 128 GB (Red) Apple ",
+            "price": 500.99,
+            "Emphasis": true,
+            "colors": ["#7CB93E", "#3F65EA", "#F64A69", "#A635EC", "#F9A85D"]
+        },
+        {
+            "id": 10,
+            "name": "Body lotion",
+            "imageSrc": "/images/redeChair.png",
+            "description": "Rovena Riva Series 6 Pcs. Wide Seating Claret Red Chair",
+            "price": 100.99,
+            "Emphasis": true,
+            "colors": ["#F64A69", "#A635EC", "#F9A85D"]
+        }
+    ]
+}
+
+
