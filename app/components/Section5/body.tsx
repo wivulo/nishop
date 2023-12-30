@@ -16,7 +16,7 @@ const Body: React.FC<BodyProps> = ({ products }) => {
     const handleOpenDetail = (product: iProduct) => {
         dispatch(openDetail(product));
     };
-    
+
     return (
         <div className=''>
             <ul className='flex flex-wrap gap-6'>
@@ -40,6 +40,7 @@ const Body: React.FC<BodyProps> = ({ products }) => {
                             return (
                                 <li key={product.id} onClick={() => handleOpenDetail(product)}>
                                     <Productcard.Root className='w-[295px] h-96'>
+                                        <Productcard.Like />
                                         <Productcard.Image
                                             src={product.imageSrc}
                                             width={500}
@@ -62,6 +63,7 @@ const Body: React.FC<BodyProps> = ({ products }) => {
                         return (
                             <li key={product.id} onClick={() => handleOpenDetail(product)}>
                                 <Productcard.Root className='w-[188px]'>
+                                    <Productcard.Like />
                                     <Productcard.Image
                                         src={product.imageSrc}
                                         width={500}

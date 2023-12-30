@@ -38,6 +38,7 @@ const Section4: React.FC<Section4Type> = ({ products }) => {
               return (
                 <li key={item.id} className="last-of-type:mr-1 first-of-type:ml-2">
                   <Productcard.Root>
+                    <Productcard.Like />
                     <Productcard.Image src={item.imageSrc} width={500} height={500} alt={item.name} />
                     <Productcard.Description text={item.description} />
                     <Productcard.Price price={item.price} />

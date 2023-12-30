@@ -8,6 +8,7 @@ import NewsLetters from './components/NewsLetters'
 import localFont from 'next/font/local'
 import Details from './components/Details'
 import Notification from "@/app/components/Notification"
+import Cart from './components/Cart'
 
 export const metadata: Metadata = {
   title: 'N I S H O P',
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: iRootLayout) {
         {children}
         <NewsLetters />
         <Footer />
-
+        <Cart />
         <Details />
       </body>
     </html>

@@ -4,16 +4,21 @@ import { useRef } from "react"
 import { FaUser, FaShoppingBag, FaSearch } from 'react-icons/fa'
 import { Button } from '../Button';
 import { Input } from '../CustomInput';
+import { useDispatch, useSelector } from "react-redux";
+import { ReduxState } from "@/lib/redux";
+import { showCart } from "@/lib/redux/Cart/cartSlice";
 
 const searchData = ["Chocolate", "Coconut", "Strawberry"]
 
 export default function HeaderContent1(){
-    const followLineRef = useRef<HTMLDivElement>(null)
+    const { quantity } = useSelector((state:ReduxState) => state.cart);
+    const dispatch = useDispatch();
+
     return (
         <div className="button-group w-auto flex gap-x-5 items-center relative z-20">
             <Input.Root>
               <Input.Combo data={searchData}></Input.Combo>
-              <Input.Input placeholder="Search anything" />
+              <Input.Input placeholder="Search anything" name="searchFild1"/>
 
               <Button.Root hoverScale>
                 <Button.Icon icon={FaSearch} className='text-lg' />
@@ -29,8 +34,12 @@ export default function HeaderContent1(){
               <Button.Text text='Account' className='text-main-medium' />
             </Button.Root>
 
-            <Button.Root hoverScale>
-              <Button.Badge count={3} />
+            <Button.Root hoverScale 
+              onClick={() => {
+                dispatch(showCart())
+              }}
+              >
+              <Button.Badge count={quantity} />
               <Button.Icon icon={FaShoppingBag} />
               <Button.Text text='Shopping' className='text-main-medium' />
             </Button.Root>
