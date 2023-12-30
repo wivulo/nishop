@@ -12,7 +12,14 @@ const Notification: React.FC = () => {
     const dispatch = useDispatch();
     const notificationRef = useRef<HTMLDivElement>(null);
 
-    console.log(message)
+    if(isOpen){
+        notificationRef.current && anime({
+            targets: notificationRef.current,
+            translateY: ["100%", "0"],
+            easing: "easeOutElastic",
+            duration: 500
+        })
+    }
 
     setTimeout(() => {
         dispatch( hideNotification() );
