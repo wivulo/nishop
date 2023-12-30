@@ -6,10 +6,11 @@ import Section3 from './components/Section3';
 import Section2 from './components/section2';
 import data from "@/app/data/data.json";
 import Section5 from './components/Section5';
+import Details from './components/Details';
 
 export default function IndexPage() {
   return (
-    <main className="w-full min-h-screen">
+    <main className="w-full min-h-screen relative">
       <SliderSection />
 
       <Section2 />

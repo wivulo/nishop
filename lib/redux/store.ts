@@ -1,10 +1,14 @@
 /* Core */
 import { configureStore, type ThunkAction, type Action } from '@reduxjs/toolkit'
 import carouselSlice from './carousel/carouselSlice'
+import detailsSlice from './Details/detailsSlice'
+import notificationSlice from './Notification/notificationSlice'
 
 export const reduxStore = configureStore({
   reducer: {
-    carousel: carouselSlice
+    carousel: carouselSlice,
+    details: detailsSlice,
+    notification: notificationSlice
   },
 })
 

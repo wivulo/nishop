@@ -1,12 +1,22 @@
+"use client";
+
 import { iProduct } from '@/app/models/iProduct';
 import React from 'react';
 import { Productcard } from '../ProductCard';
+import { useDispatch } from 'react-redux';
+import { openDetail } from '@/lib/redux/Details/detailsSlice';
 
 interface BodyProps {
     products: iProduct[];
 }
 
 const Body: React.FC<BodyProps> = ({ products }) => {
+    const dispatch = useDispatch();
+
+    const handleOpenDetail = (product: iProduct) => {
+        dispatch(openDetail(product));
+    };
+    
     return (
         <div className=''>
             <ul className='flex flex-wrap gap-6'>
@@ -14,7 +24,7 @@ const Body: React.FC<BodyProps> = ({ products }) => {
                     if (product.Emphasis) {
                         if (i === 0) {
                             return (
-                                <li key={product.id}>
+                                <li key={product.id} onClick={() => handleOpenDetail(product)}>
                                     <Productcard.Root className='w-[295px] h-96 flex justify-center items-center p-0'>
                                         <Productcard.Image
                                             src={product.imageSrc}
@@ -28,7 +38,7 @@ const Body: React.FC<BodyProps> = ({ products }) => {
                             )
                         } else {
                             return (
-                                <li key={product.id}>
+                                <li key={product.id} onClick={() => handleOpenDetail(product)}>
                                     <Productcard.Root className='w-[295px] h-96'>
                                         <Productcard.Image
                                             src={product.imageSrc}
@@ -50,7 +60,7 @@ const Body: React.FC<BodyProps> = ({ products }) => {
                         }
                     } else {
                         return (
-                            <li key={product.id}>
+                            <li key={product.id} onClick={() => handleOpenDetail(product)}>
                                 <Productcard.Root className='w-[188px]'>
                                     <Productcard.Image
                                         src={product.imageSrc}

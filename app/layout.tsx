@@ -6,6 +6,8 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import NewsLetters from './components/NewsLetters'
 import localFont from 'next/font/local'
+import Details from './components/Details'
+import Notification from "@/app/components/Notification"
 
 export const metadata: Metadata = {
   title: 'N I S H O P',
@@ -22,10 +24,13 @@ export default function RootLayout({ children }: iRootLayout) {
     <Providers>
       <html lang="pt">
       <body className={poppins.className}>
+        <Notification />
         <Header />
         {children}
         <NewsLetters />
         <Footer />
+
+        <Details />
       </body>
     </html>
     </Providers>
