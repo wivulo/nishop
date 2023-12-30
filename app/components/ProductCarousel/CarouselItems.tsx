@@ -1,20 +1,22 @@
 "use client";
 
+import { ReduxState } from '@/lib/redux';
 import anime from 'animejs';
 import React, { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { twMerge } from 'tailwind-merge';
 
 interface iCarouselItemsProps extends React.HTMLAttributes<HTMLUListElement> {
     children: React.ReactNode;
-    scrollLeft: number
 }
 
-const CarouselItems: React.FC<iCarouselItemsProps> = ({ children, scrollLeft,...rest }) => {
+const CarouselItems: React.FC<iCarouselItemsProps> = ({ children,...rest }) => {
     const listRef = useRef<HTMLUListElement>(null);
+    const { scrollleft } = useSelector((state: ReduxState) => state.carousel)
 
     useEffect(() => {
         if (listRef.current) {
-            const targetScroll = listRef.current.scrollLeft + scrollLeft;
+            const targetScroll = listRef.current.scrollLeft + scrollleft;
             const animation = anime({
                 targets: { value: listRef.current.scrollLeft },
                 value: targetScroll,
@@ -27,7 +29,7 @@ const CarouselItems: React.FC<iCarouselItemsProps> = ({ children, scrollLeft,...
                 }
             });
         }
-    }, [scrollLeft]);
+    }, [scrollleft]);
 
     return (
         <div className='w-[1333px] h-full px-3 flex justify-center scroll-smooth'>

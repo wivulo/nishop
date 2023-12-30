@@ -6,30 +6,24 @@ import { ProductCarousel } from "@/app/components/ProductCarousel";
 import { Productcard } from "@/app/components/ProductCard";
 import { carouselReducer } from "@/app/components/ProductCarousel/carouselReducer";
 import { iProduct } from '@/app/models/iProduct';
+import { useDispatch, useSelector } from 'react-redux';
+import { decrease, increase } from '@/lib/redux/carousel/carouselSlice';
+import { ReduxState } from '@/lib/redux';
 
 type Section4Type = {
   products: Array<iProduct>
 }
 
 const Section4: React.FC<Section4Type> = ({ products }) => {
-  const [scrollLeft, dispatch] = useReducer(carouselReducer, 0);
+  //const [scrollLeft, dispatch] = useReducer(carouselReducer, 0);
+  const dispatch = useDispatch()
 
   const handleMoveScrollRight = (value: number) => {
-    dispatch({
-      type: "type/increase",
-      payload: {
-        scroll: value
-      }
-    })
+    dispatch(increase({scroll: value}))
   }
 
   const handleMoveScrollLeft = (value: number) => {
-    dispatch({
-      type: "type/decrease",
-      payload: {
-        scroll: value
-      }
-    })
+    dispatch(decrease({scroll: value}))
   }
 
   return (
@@ -38,7 +32,7 @@ const Section4: React.FC<Section4Type> = ({ products }) => {
         <ProductCarousel.Heading>
           <ProductCarousel.Title text="Discover unique hand-picked items." />
         </ProductCarousel.Heading>
-        <ProductCarousel.Items className="mx-5" scrollLeft={scrollLeft}>
+        <ProductCarousel.Items className="mx-5">
           {products.map((item: iProduct) => {
             if (item.Emphasis === false) {
               return (
