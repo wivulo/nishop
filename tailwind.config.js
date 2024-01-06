@@ -38,7 +38,17 @@ module.exports = {
       "system-warning": "#d89614",
       "system-url": "#177ddc",
     },
-    extend: {},
+    extend: {
+      keyframes: {
+        "translateX": {
+          "0%": {"transform": "translateX(-100%)"},
+          "100%": {"transform": "translateX(0%)"}
+        }
+      },
+      animation: {
+        "translateX": "translateX .3s ease 0s forwards"
+      }
+    },
   },
   plugins: [],
 }

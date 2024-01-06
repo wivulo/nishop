@@ -1,12 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface iNotification {
-    message: string,
+interface iNotificationSlice {
+    notifications: Array<iNotification>,
     isOpen: boolean
 }
 
-const initialState: iNotification = {
-    message: "",
+interface iNotification{
+    id: number,
+    message: string,
+}
+
+const initialState: iNotificationSlice = {
+    notifications: [] as iNotification[],
     isOpen: false
 };
 
@@ -15,12 +20,15 @@ const notificationSlice = createSlice({
     initialState,
     reducers: {
         showNotification: (state, action) => {
-            state.message = action.payload;
+            state.notifications.push({
+                id: state.notifications.length + 1,
+                ...action.payload
+            });
             state.isOpen = true;
         },
 
         hideNotification: (state) => {
-            state.message = "";
+            state.notifications = [];
             state.isOpen = false;
         }
     },

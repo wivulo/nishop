@@ -9,6 +9,7 @@ import localFont from 'next/font/local'
 import Details from './components/Details'
 import Notification from "@/app/components/Notification"
 import Cart from './components/Cart'
+import Notifications from './components/Notifications'
 
 export const metadata: Metadata = {
   title: 'N I S H O P',
@@ -24,8 +25,8 @@ export default function RootLayout({ children }: iRootLayout) {
   return (
     <Providers>
       <html lang="pt">
-      <body className={poppins.className}>
-        <Notification />
+      <body className={poppins.className + " relative"}>
+        <Notifications />
         <Header />
         {children}
         <NewsLetters />

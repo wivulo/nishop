@@ -9,6 +9,8 @@ import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { decreaseQuantityPerProduct, hideCart, increaseQuantityPerProduct, removeProduct } from '@/lib/redux/Cart/cartSlice';
 import anime from 'animejs';
 import { Productcard } from '../ProductCard';
+import { showNotification } from '@/lib/redux/Notification/notificationSlice';
+import { hideCartAnimation, showCartAnimation } from './animations';
 
 
 
@@ -22,23 +24,19 @@ const Cart: React.FC = () => {
         dispatch(removeProduct({id: id}))
     }
 
-    const handleIncreaseProduct = (id: number) => dispatch(increaseQuantityPerProduct({id: id}))
+    const handleIncreaseProduct = (id: number) => {
+        dispatch(increaseQuantityPerProduct({id: id}))
+        dispatch( showNotification({message: "Product quantity increased"}))
+    }
     const handledecreaseProduct = (id: number) => dispatch(decreaseQuantityPerProduct({id: id}))
 
     useEffect(() => {
-        const cart = cartRef.current;
-
-        cart && anime({
-            targets: cart,
-            duration: 200,
-            translateX: ["100%", "0"],
-            easing: "easeOutElastic"
-        })
-    })
+        showCart? showCartAnimation(anime, cartRef.current) : hideCartAnimation(anime, cartRef.current);
+    }, [showCart]);
 
     return (
         <div ref={cartRef}
-            className={`fixed transform ${showCart ? "flex" : "hidden"} right-0 top-0
+            className={`fixed flex transform ${showCart ? "translate-x-0" : "translate-x-full"} right-0 top-0
             w-96 h-screen bg-base-soft shadow shadow-black z-[70] px-3 pt-20 transition-all`}
         >
             <div className='absolute top-0 left-0 flex justify-between w-full p-2'>
@@ -52,12 +50,12 @@ const Cart: React.FC = () => {
             <div className='flex flex-col w-full'>
                 <div className='w-full h-4/5 overflow-hidden'>
                     <ul className={`h-auto w-full overflow-y-auto flex flex-col 
-                        ${!products.length && " h-full justify-center items-center"} relative`
+                        ${!products.length && " h-full justify-center items-center"} relative overflow-hidden`
                     }>
                         {
                             products.length > 0 ?
                                 products.map(cartItem => (
-                                    <li key={cartItem.product.id} className='relative'>
+                                    <li key={cartItem.product.id} className='relative animate-translateX'>
                                         <Productcard.Root className='flex-row w-full h-24'>
                                             <Productcard.Image src={cartItem.product.imageSrc} width={300} height={300} className='w-20 h-20 basis-1/3' alt={cartItem.product.name} />
                                             <Productcard.Description text={cartItem.product.description} className='basis-2/3' />

@@ -6,9 +6,12 @@ import { ReduxState } from '@/lib/redux';
 import anime from 'animejs';
 import { hideNotification } from '@/lib/redux/Notification/notificationSlice';
 
+interface iNotification{
+    message: string,
+    isOpen: boolean
+}
 
-const Notification: React.FC = () => {
-    const {isOpen, message} = useSelector((state: ReduxState) => state.notification);
+const Notification: React.FC<iNotification> = ({ isOpen, message }) => {
     const dispatch = useDispatch();
     const notificationRef = useRef<HTMLDivElement>(null);
 
@@ -26,8 +29,7 @@ const Notification: React.FC = () => {
     }, 2000);
 
     return (
-        <div ref={notificationRef} className={`${isOpen? "flex" : "hidden"} fixed bg-system-success z-[60] 
-        top-5 self-center p-5 rounded-lg`}>
+        <div ref={notificationRef} className={`${isOpen? "flex" : "hidden"} bg-system-success z-[60] p-5 rounded-lg`}>
             <p className='text-center text-xs'>{message}</p>
         </div>
     );

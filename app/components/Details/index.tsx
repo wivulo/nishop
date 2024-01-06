@@ -23,8 +23,10 @@ const Details: React.FC = () => {
 
     const handleAddToCart = () => {
         dispatch(addProduct(product))
-        handleCloseDetail()
-        dispatch(showNotification("Success to add product to the cart"))
+        // handleCloseDetail()
+        dispatch(showNotification({
+            message: "Success to add product to the cart"
+        }))
     }
 
     const detail = detailRef.current;
