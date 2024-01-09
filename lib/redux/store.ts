@@ -4,13 +4,15 @@ import carouselSlice from './carousel/carouselSlice'
 import detailsSlice from './Details/detailsSlice'
 import notificationSlice from './Notification/notificationSlice'
 import cartSlice from './Cart/cartSlice'
+import shoppingBagSlice from './ShoppingBag/shoppingBagSlice'
 
 export const reduxStore = configureStore({
   reducer: {
     carousel: carouselSlice,
     details: detailsSlice,
     notification: notificationSlice,
-    cart: cartSlice
+    cart: cartSlice,
+    shoppingBag: shoppingBagSlice,
   },
 })
 

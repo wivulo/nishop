@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReduxState } from "@/lib/redux";
 import { showCart } from "@/lib/redux/Cart/cartSlice";
 import { useIntersectionObserver } from "@react-hooks-library/core";
+import { setIsInView } from "@/lib/redux/ShoppingBag/shoppingBagSlice";
 
 const searchData = ["Chocolate", "Coconut", "Strawberry"]
 
@@ -19,6 +20,7 @@ export default function HeaderContent1() {
   const handleShowCart = () => dispatch(showCart())
 
   const { inView } = useIntersectionObserver(shoppingBag);
+  dispatch(setIsInView(inView));
 
   return (
     <div className="button-group w-auto flex gap-x-5 items-center z-20">

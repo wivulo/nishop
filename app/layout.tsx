@@ -10,12 +10,13 @@ import Details from './components/Details'
 import Notification from "@/app/components/Notification"
 import Cart from './components/Cart'
 import Notifications from './components/Notifications'
+import ShoppingBag from './components/ShoppingBag'
 
 export const metadata: Metadata = {
   title: 'N I S H O P',
 }
 
-interface iRootLayout{
+interface iRootLayout {
   children: React.ReactNode
 }
 
@@ -25,16 +26,19 @@ export default function RootLayout({ children }: iRootLayout) {
   return (
     <Providers>
       <html lang="pt">
-      <body className={poppins.className + " relative"}>
-        <Notifications />
-        <Header />
-        {children}
-        <NewsLetters />
-        <Footer />
-        <Cart />
-        <Details />
-      </body>
-    </html>
+        <body>
+          <div className={poppins.className + " relative flex flex-col w-full h-auto min-h-screen"}>
+            <Notifications />
+            <Header />
+            {children}
+            <NewsLetters />
+            <Footer />
+            <Cart />
+            <Details />
+            <ShoppingBag />
+          </div>
+        </body>
+      </html>
     </Providers>
   )
 }
