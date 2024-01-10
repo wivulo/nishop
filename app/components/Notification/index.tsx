@@ -8,10 +8,11 @@ import { hideNotification } from '@/lib/redux/Notification/notificationSlice';
 
 interface iNotification{
     message: string,
-    isOpen: boolean
+    isOpen: boolean,
+    type?: string
 }
 
-const Notification: React.FC<iNotification> = ({ isOpen, message }) => {
+const Notification: React.FC<iNotification> = ({ isOpen, message, type }) => {
     const dispatch = useDispatch();
     const notificationRef = useRef<HTMLDivElement>(null);
 
@@ -29,7 +30,8 @@ const Notification: React.FC<iNotification> = ({ isOpen, message }) => {
     }, 2000);
 
     return (
-        <div ref={notificationRef} className={`${isOpen? "flex" : "hidden"} bg-system-success z-[60] p-5 rounded-lg`}>
+        <div ref={notificationRef} className={`${isOpen? "flex" : "hidden"} 
+        ${type === "success" ? "bg-system-success" : type === "warning" ? "bg-system-warning" : "bg-system-error"} z-[60] p-5 rounded-lg`}>
             <p className='text-center text-xs'>{message}</p>
         </div>
     );

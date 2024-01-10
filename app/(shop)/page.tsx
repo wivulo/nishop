@@ -1,12 +1,12 @@
 import React, { useReducer } from 'react';
 import Image from "next/image";
-import SliderSection from "./components/Slider";
-import Section4 from './components/Section4';
-import Section3 from './components/Section3';
-import Section2 from './components/section2';
+import SliderSection from "../components/Slider";
+import Section4 from '../components/Section4';
+import Section3 from '../components/Section3';
+import Section2 from '../components/section2';
 import data from "@/app/data/data.json";
-import Section5 from './components/Section5';
-import Details from './components/Details';
+import Section5 from '../components/Section5';
+import Details from '../components/Details';
 
 export default function IndexPage() {
   return (

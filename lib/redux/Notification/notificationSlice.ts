@@ -5,9 +5,10 @@ interface iNotificationSlice {
     isOpen: boolean
 }
 
-interface iNotification{
-    id: number,
+interface iNotification {
+    id?: number,
     message: string,
+    type?: string,
 }
 
 const initialState: iNotificationSlice = {
@@ -19,12 +20,14 @@ const notificationSlice = createSlice({
     name: 'notification',
     initialState,
     reducers: {
-        showNotification: (state, action) => {
-            state.notifications.push({
-                id: state.notifications.length + 1,
-                ...action.payload
-            });
-            state.isOpen = true;
+        showNotification: (state, action:PayloadAction<iNotification>) => {
+            if (action.payload.message) {
+                state.notifications.push({
+                    id: state.notifications.length + 1,
+                    ...action.payload
+                });
+                state.isOpen = true;
+            }
         },
 
         hideNotification: (state) => {

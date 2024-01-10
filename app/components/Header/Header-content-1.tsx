@@ -39,7 +39,7 @@ export default function HeaderContent1() {
 
       <Button.Root hoverScale>
         <Button.Icon icon={FaUser} />
-        <Button.Text text='Account' className='text-main-medium' />
+        <Button.Link href={"/login"} isActiveLink={false} text='Account' className='text-main-medium' />
       </Button.Root>
 
       <Button.Root hoverScale reference={shoppingBag} onClick={handleShowCart}>

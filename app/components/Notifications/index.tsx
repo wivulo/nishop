@@ -13,7 +13,7 @@ const Notifications: React.FC = () => {
             <ul className='flex w-full flex-col gap-3 justify-center items-center'>
                 {
                     notifications.map(notification => (
-                        <Notification isOpen message={notification.message} key={notification.id} />
+                        <Notification isOpen message={notification.message} key={notification.id} type={notification.type} />
                     ))
                 }
             </ul>
