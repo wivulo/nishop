@@ -1,7 +1,6 @@
 "use server";
 
-import { iUser } from '@/app/models/iUser'
-import { User } from '@prisma/client'
+import { cookies } from "next/headers";
 import prisma from '@/lib/prisma/prisma';
 import { ERequestState } from '@/app/models/eRequestState';
 
@@ -59,7 +58,7 @@ export async function getUser(prevState: any, data: FormData) {
         }
     }
 
-    console.log(match)
+    cookies().set("user", JSON.stringify(match), { path: "/" });
 
     return {
         state: ERequestState.success,

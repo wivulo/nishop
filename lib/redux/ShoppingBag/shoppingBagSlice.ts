@@ -13,7 +13,6 @@ const iShoppingBagSlice = createSlice({
     initialState,
     reducers: {
         setIsInView: (state, action) => {
-            console.log(state.inView)
             state.inView = action.payload
         },
     },

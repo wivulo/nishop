@@ -1,27 +1,16 @@
-"use client"
-
-import { useRef } from "react"
+"use server";
 import { FaUser, FaShoppingBag, FaSearch } from 'react-icons/fa'
 import { Button } from '../Button';
 import { Input } from '../CustomInput';
-import { useDispatch, useSelector } from "react-redux";
-import { ReduxState } from "@/lib/redux";
-import { showCart } from "@/lib/redux/Cart/cartSlice";
-import { useIntersectionObserver } from "@react-hooks-library/core";
-import { setIsInView } from "@/lib/redux/ShoppingBag/shoppingBagSlice";
+import IsLogged from "./IsLogged";
+import ShoppingButton from "./ShoppingButton";
+import { cookies } from 'next/headers';
 
 const searchData = ["Chocolate", "Coconut", "Strawberry"]
 
-export default function HeaderContent1() {
-  const { quantity } = useSelector((state: ReduxState) => state.cart);
-  const dispatch = useDispatch();
-  const shoppingBag = useRef<HTMLButtonElement>(null);
-
-  const handleShowCart = () => dispatch(showCart())
-
-  const { inView } = useIntersectionObserver(shoppingBag);
-  dispatch(setIsInView(inView));
-
+export default async function HeaderContent1() {
+  let user: any = cookies().has("user") ? JSON.parse(cookies().get("user")?.value!) : {};
+  
   return (
     <div className="button-group w-auto flex gap-x-5 items-center z-20">
       <Input.Root>
@@ -39,14 +28,10 @@ export default function HeaderContent1() {
 
       <Button.Root hoverScale>
         <Button.Icon icon={FaUser} />
-        <Button.Link href={"/login"} isActiveLink={false} text='Account' className='text-main-medium' />
+        <IsLogged user={user}/>
       </Button.Root>
 
-      <Button.Root hoverScale reference={shoppingBag} onClick={handleShowCart}>
-        <Button.Badge count={quantity} />
-        <Button.Icon icon={FaShoppingBag} />
-        <Button.Text text='Shopping' className='text-main-medium' />
-      </Button.Root>
+      <ShoppingButton />
     </div>
   )
 }

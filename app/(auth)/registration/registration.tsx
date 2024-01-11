@@ -20,9 +20,9 @@ const initialState = {
     user: null
 }
 
-function Login() {
+function Registration() {
     const [isClient, setIsClient] = useState(false)
-    const [state, formAction] = useFormState(getUser, initialState);
+    const [state, formAction] = useFormState(createUser, initialState);
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -35,8 +35,8 @@ function Login() {
             type: state.state == ERequestState.success ? "success" : state.state == ERequestState.error ? "error" : "warning"
         }));
 
-        if(state.state === ERequestState.success && state.user){
-            redirect("/");
+        if(state.user){
+            redirect("/login");
         }
     }, [state.message])
 
@@ -57,7 +57,11 @@ function Login() {
                     <FaUser className='w-32 h-32 text-main-third' />
                 </div>
 
-                <form name='login' action={formAction} className='flex flex-col gap-3'>
+                <form name='registration' action={formAction} className='flex flex-col gap-3'>
+                    <Input.Root className='w-72 rounded-sm'>
+                        <Input.Input type='name' name='name' placeholder='Name' />
+                    </Input.Root>
+
                     <Input.Root className='w-72 rounded-sm'>
                         <Input.Input type='email' name='email' placeholder='Email' />
                     </Input.Root>
@@ -67,16 +71,12 @@ function Login() {
                     </Input.Root>
 
                     <Button.Root type="submit" hasbg className='w-full py-3 rounded-sm'>
-                        <Button.Text text='Login' />
+                        <Button.Text text='Register' />
                     </Button.Root>
                 </form>
-
-                <div>
-                    <p>Ainda não tens uma conta? <Link href={"/registration"} className='underline hover:text-main-third'>Junta-se a nós</Link></p>
-                </div>
             </section>
         </div>
     );
 };
 
-export default Login;
+export default Registration;

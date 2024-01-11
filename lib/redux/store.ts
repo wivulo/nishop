@@ -5,6 +5,7 @@ import detailsSlice from './Details/detailsSlice'
 import notificationSlice from './Notification/notificationSlice'
 import cartSlice from './Cart/cartSlice'
 import shoppingBagSlice from './ShoppingBag/shoppingBagSlice'
+import userSlice from './User/userSlice'
 
 export const reduxStore = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const reduxStore = configureStore({
     notification: notificationSlice,
     cart: cartSlice,
     shoppingBag: shoppingBagSlice,
+    user: userSlice
   },
 })
 
