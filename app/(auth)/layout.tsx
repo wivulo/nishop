@@ -4,6 +4,7 @@ import { Providers } from '@/lib/providers'
 import '../styles/globals.css'
 import localFont from 'next/font/local'
 import Notifications from '../components/Notifications'
+import Loading from '../components/Loading'
 
 export const metadata: Metadata = {
   title: 'Login',
@@ -22,6 +23,7 @@ export default function RootLayout({ children }: iRootLayout) {
         <body>
           <div className={poppins.className + " relative flex w-screen h-screen"}>
             <Notifications />
+            {/* <Loading /> */}
             {children}
           </div>
         </body>

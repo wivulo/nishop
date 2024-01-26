@@ -22,8 +22,7 @@ export default async function HeaderContent1() {
       </Button.Root>
 
       <Button.Root hoverScale>
-        <Button.Icon icon={FaUser} />
-        <IsLogged user={user}/>
+          <IsLogged user={user}/>
       </Button.Root>
 
       <ShoppingButton />

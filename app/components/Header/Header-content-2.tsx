@@ -30,32 +30,46 @@ export default function HeaderContent2() {
           href={`/Accessories`}
           isActiveLink
           text='Jewelry & Accessories'
-        />
+        >
+          Jewelry & Accessories
+        </Button.Link>
       </Button.Root>
 
 
       <Button.Root >
-        <Button.Link href={"/shoes"} text="Clothing & Shoes" isActiveLink />
+        <Button.Link href={"/shoes"} text="Clothing & Shoes" isActiveLink >
+          Clothing & Shoes
+        </Button.Link>
       </Button.Root>
 
       <Button.Root >
-        <Button.Link href={"/living"} text="Home & Living" isActiveLink />
+        <Button.Link href={"/living"} text="Home & Living" isActiveLink >
+          Home & Living
+        </Button.Link>
       </Button.Root>
 
       <Button.Root >
-        <Button.Link href={"/party"} text="Wedding & Party" isActiveLink />
+        <Button.Link href={"/party"} text="Wedding & Party" isActiveLink >
+          Wedding & Party
+        </Button.Link>
       </Button.Root>
 
       <Button.Root >
-        <Button.Link href={"/entertaiment"} text="Toys & Entertainment" isActiveLink />
+        <Button.Link href={"/entertaiment"} text="Toys & Entertainment" isActiveLink >
+          Toys & Entertainment
+        </Button.Link>
       </Button.Root>
 
       <Button.Root >
-        <Button.Link href={"/collectibles"} text="Art & Collectibles" isActiveLink />
+        <Button.Link href={"/collectibles"} text="Art & Collectibles" isActiveLink >
+          Art & Collectibles
+        </Button.Link>
       </Button.Root>
 
       <Button.Root >
-        <Button.Link href={"/tools"} text="Craft Supplies & Tools" isActiveLink />
+        <Button.Link href={"/tools"} text="Craft Supplies & Tools" isActiveLink >
+          Craft Supplies & Tools
+        </Button.Link>
       </Button.Root>
 
       <div ref={followLineRef} className='w-20 h-1 bg-main-primary absolute left-1 -bottom-2'></div>

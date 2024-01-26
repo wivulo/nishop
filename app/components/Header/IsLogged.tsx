@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, logoutUser } from "@/lib/redux/User/userSlice";
 import { User } from "@prisma/client";
 import { ReduxState } from "@/lib/redux";
+import { FaUser } from "react-icons/fa";
 
 interface iIsLogged {
     user: User;
@@ -36,8 +37,11 @@ export default function IsLogged({ user }: iIsLogged) {
                 href={"/login"}
                 isActiveLink={false}
                 text='Account'
-                className='text-main-medium'
-            />
+                className='text-main-medium flex gap-2'
+            >
+                <Button.Icon icon={FaUser} />
+                Account
+            </Button.Link>
         )
     }
 }

@@ -65,6 +65,7 @@ const Body: React.FC<BodyProps> = ({ products, filteredProductsUseQueryState: fi
                                 product={product}
                                 index={i}
                                 onOpenProductDetail={handleOpenDetail}
+                                key={product.id}
                             />
                         })}
             </ul>
