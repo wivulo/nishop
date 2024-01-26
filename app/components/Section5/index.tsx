@@ -10,16 +10,21 @@ import { useQueryState } from 'nuqs';
 
 interface Section5Props {
     products: Product[];
+    ispedding?: boolean;
 }
 
-const emphasisShifted = (values: Product[]): Product[] => {
+const emphasisShifted = (values: Product[]) => {
     const emphasizedProducts = values?.filter((value) => value.Emphasis);
     const nonEmphasizedProducts = values?.filter((value) => !value.Emphasis);
-    return [...emphasizedProducts, ...nonEmphasizedProducts];
+    //return [...emphasizedProducts, ...nonEmphasizedProducts];
+    let prods: Product[] = []
+    emphasizedProducts && emphasizedProducts.map(p => prods.push(p))
+    nonEmphasizedProducts && nonEmphasizedProducts.map(p => prods.push(p))
+    return prods
 };
 
 
-const Section5: React.FC<Section5Props> = ({ products }) => {
+const Section5: React.FC<Section5Props> = ({ products, ispedding }) => {
     const [filteredProducts, setFilteredProducts] = useQueryState('product-category');
 
     return (
@@ -51,7 +56,8 @@ const Section5: React.FC<Section5Props> = ({ products }) => {
                     </HeadingItem>
                 </Heading>
 
-                <Body 
+                <Body
+                    ispedding={ispedding}
                     products={emphasisShifted(products)} 
                     filteredProductsUseQueryState={filteredProducts}
                 />

@@ -5,14 +5,16 @@ import { useDispatch } from 'react-redux';
 import { openDetail } from '@/lib/redux/Details/detailsSlice';
 import { Product } from '@prisma/client';
 import { ProductListItem } from '../ProductListItem';
+import { ProductListSkelton } from '../ProductListSkelton';
 
 
 interface BodyProps {
     products: Product[];
     filteredProductsUseQueryState: any;
+    ispedding?: boolean
 }
 
-const Body: React.FC<BodyProps> = ({ products, filteredProductsUseQueryState: filteredProducts }) => {
+const Body: React.FC<BodyProps> = ({ products, filteredProductsUseQueryState: filteredProducts, ispedding }) => {
     const dispatch = useDispatch();
 
     const handleOpenDetail = (product: Product) => {
@@ -20,6 +22,10 @@ const Body: React.FC<BodyProps> = ({ products, filteredProductsUseQueryState: fi
     };
 
     let filtered = filteredProducts ? products?.filter(product => product.category?.toLowerCase().includes(filteredProducts.toLowerCase())) : [];
+
+    if(ispedding){
+        return <ProductListSkelton />
+    }
 
     return (
         <div className=''>
@@ -39,22 +45,22 @@ const Body: React.FC<BodyProps> = ({ products, filteredProductsUseQueryState: fi
                                     />
                                     <Productcard.Description text={product.description} />
                                     {
-                                        product.colors.length > 0 
+                                        product.colors.length > 0
                                         &&
                                         (<Productcard.Colors>
-                                        {product.colors.split("#").filter(color => color.length > 0).map(
-                                            (color, i) => (
-                                                <Productcard.Color
-                                                    key={i}
-                                                    color={"#" + color.replace(",", "")}
-                                                />
-                                            )
-                                        )}
+                                            {product.colors.split("#").filter(color => color.length > 0).map(
+                                                (color, i) => (
+                                                    <Productcard.Color
+                                                        key={i}
+                                                        color={"#" + color.replace(",", "")}
+                                                    />
+                                                )
+                                            )}
                                         </Productcard.Colors>)
                                     }
-                                    <Productcard.Price 
-                                        className={`${!product.colors.length && "absolute bottom-7"}`} 
-                                        price={product.price} 
+                                    <Productcard.Price
+                                        className={`${!product.colors.length && "absolute bottom-7"}`}
+                                        price={product.price}
                                     />
                                 </Productcard.Root>
                             </li>

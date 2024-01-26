@@ -32,7 +32,7 @@ const CarouselItems: React.FC<iCarouselItemsProps> = ({ children,...rest }) => {
     }, [scrollleft]);
 
     return (
-        <div className='w-[1333px] h-full px-3 flex justify-center scroll-smooth'>
+        <div className='w-[1333px] h-full px-3 flex scroll-smooth'>
             <ul ref={listRef} {...rest} className={twMerge('flex w-auto gap-x-4 overflow-x-hidden py-2 scroll-smooth', rest.className)}>
                     {children}
             </ul>
