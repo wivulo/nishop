@@ -21,7 +21,7 @@ export default async function HeaderContent1() {
         <Button.Text text='Help' />
       </Button.Root>
 
-      <Button.Root hoverScale>
+      <Button.Root hoverScale className='w-[99px] h-6'>
           <IsLogged user={user}/>
       </Button.Root>
 

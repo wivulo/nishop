@@ -3,36 +3,47 @@
 import { cookies } from "next/headers";
 import prisma from '@/lib/prisma/prisma';
 import { ERequestState } from '@/app/models/eRequestState';
+import { registrationValidator } from "./validator";
 
-export async function createUser(prevState: any, formData: FormData) {
-    const match = await prisma.user.findUnique({
-        where: {
-            email: formData.get("email") as string
+export async function createUser(formData: FormData) {
+    if (registrationValidator(formData)) {
+        const match = await prisma.user.findUnique({
+            where: {
+                email: formData.get("email") as string
+            }
+        })
+
+        if (match) {
+            return {
+                state: ERequestState.warning,
+                message: "Email already in use",
+                user: null,
+            }
         }
-    })
 
-    if (match) {
+        const user = await prisma.user.create({
+            data: {
+                name: formData.get("name") as string,
+                email: formData.get("email") as string,
+                password: formData.get("password") as string,
+            },
+        }).catch(async () => {
+            await prisma.$disconnect()
+        })
+
+        await prisma.$disconnect()
+
         return {
-            state: ERequestState.warning,
-            message: "Email already in use",
+            state: ERequestState.success,
+            message: "User created",
+            user: user,
+        }
+    }else{
+        return {
+            state: ERequestState.error,
+            message: "Please don't send empty filds!",
             user: null,
         }
-    }
-
-    const user = await prisma.user.create({
-        data: {
-            name: formData.get("name") as string,
-            email: formData.get("email") as string,
-            password: formData.get("password") as string,
-        },
-    }).then(async () => {
-        await prisma.$disconnect()
-    })
-
-    return {
-        state: ERequestState.success,
-        message: "User created",
-        user: user,
     }
 }
 
@@ -52,7 +63,7 @@ export async function getUser(prevState: any, data: FormData) {
 
     //await prisma.$disconnect()
 
-    if(!match){
+    if (!match) {
         return {
             state: ERequestState.error,
             message: "Email or Password wrong! Please, try again",
@@ -87,7 +98,7 @@ export async function getUserAlt(data: FormData) {
 
     //await prisma.$disconnect()
 
-    if(!match){
+    if (!match) {
         return {
             state: ERequestState.error,
             message: "Email or Password wrong! Please, try again",

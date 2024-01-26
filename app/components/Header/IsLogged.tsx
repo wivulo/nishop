@@ -9,7 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { login, logoutUser } from "@/lib/redux/User/userSlice";
 import { User } from "@prisma/client";
 import { ReduxState } from "@/lib/redux";
-import { FaUser } from "react-icons/fa";
+import { FaSpinner, FaUser } from "react-icons/fa";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 interface iIsLogged {
     user: User;
@@ -17,20 +18,36 @@ interface iIsLogged {
 
 export default function IsLogged({ user }: iIsLogged) {
     const { user: currentUser } = useSelector((state: ReduxState) => state.user)
-    const [isLogged, setIsLogged] = useState<boolean>(false);
     const dispatch = useDispatch()
 
     useEffect(() => {
         dispatch( login(user) )
-      }, [user]);
-    
-    const handleLogout = async () => {
-        const res = await logout()
-        res.status && dispatch(logoutUser())
-    }
+    }, [user]);
+
+    const { mutate, isPending } = useMutation({
+        mutationFn: logout,
+        onSuccess: (data) => {
+            if(data.status) dispatch(logoutUser())
+        }
+    })
+
 
     if (currentUser.name) {
-        return (<p onClick={handleLogout}>{currentUser.name}</p>)
+        if(isPending){
+            return (
+                <p onClick={() => mutate()}>
+                   <div className="animate-spin">
+                    <FaSpinner className="w-8 h-8 font-semibold text-lg text-main-third" />
+                   </div>
+                </p>
+            )
+        }else{
+            return (
+                <p onClick={() => mutate()} className="px-5 h-7 text-lg">
+                    {currentUser.name}
+                </p>
+            )
+        }
     } else {
         return (
             <Button.Link

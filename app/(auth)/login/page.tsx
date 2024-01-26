@@ -10,7 +10,7 @@ import { ERequestState } from '@/app/models/eRequestState';
 import { Input } from '@/app/components/CustomInput';
 import { Button } from '@/app/components/Button';
 import { FaUser } from 'react-icons/fa';
-import { redirect } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import Loading from '@/app/components/Loading';
 
@@ -22,6 +22,7 @@ const initialState = {
 
 function Login() {
     const [isClient, setIsClient] = useState(false)
+    const router = useRouter();
     // const [state, formAction] = useFormState(getUser, initialState);
     // const [isLoading, setIsLoading] = useQueryState("isloading")
 
@@ -54,8 +55,8 @@ function Login() {
                 type: data.state == ERequestState.success ? "success" : data.state == ERequestState.error ? "error" : "warning"
             }));
 
-            if (data.state === ERequestState.success && data.user) {
-                redirect("/");
+            if (data.state === ERequestState.success) {
+                router.push("/");
             }
         },
     })
