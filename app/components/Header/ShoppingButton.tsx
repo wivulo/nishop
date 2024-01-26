@@ -28,7 +28,7 @@ export default function ShoppingButton({ }: iShoppingProps) {
 
     return (
         <Button.Root hoverScale reference={shoppingBag} onClick={handleShowCart}>
-            <Button.Badge count={quantity} />
+            <Button.Badge count={quantity >= 0 ? quantity : 0} />
             <Button.Icon icon={FaShoppingBag} />
             <Button.Text text='Shopping' className='text-main-medium' />
         </Button.Root>

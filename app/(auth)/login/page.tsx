@@ -43,13 +43,13 @@ function Login() {
     return (
         <div className='flex w-full h-full bg-base-soft flex-col'>
             <header className='flex justify-start p-7 relative'>
-                <Link href={"/"} className='group'>
+                <div className='group'>
                     <Logo />
 
                     <div className='absolute hidden w-auto h-auto p-2 px-5 transition-all justify-center items-center bg-white/70 shadow-md -bottom-2 left-4 group-hover:flex'>
                         <p className='text-center text-text-2/50 text-xs'>Back to Shop.</p>
                     </div>
-                </Link>
+                </div>
             </header>
 
             <section className='flex justify-center items-center flex-col gap-5 w-full h-full relative'>

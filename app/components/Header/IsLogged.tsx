@@ -4,23 +4,32 @@ import { iUser } from "@/app/models/iUser";
 import { logout } from "./logout";
 import { Button } from "../Button";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { login, logoutUser } from "@/lib/redux/User/userSlice";
+import { User } from "@prisma/client";
+import { ReduxState } from "@/lib/redux";
 
 interface iIsLogged {
-    user: iUser;
+    user: User;
 }
 
 export default function IsLogged({ user }: iIsLogged) {
-    const [isLogged, setIsLogged] = useState<boolean>(false)
+    const { user: currentUser } = useSelector((state: ReduxState) => state.user)
+    const [isLogged, setIsLogged] = useState<boolean>(false);
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch( login(user) )
+      }, [user]);
     
     const handleLogout = async () => {
-        await logout()
-        
-        setIsLogged(prev => !prev);
+        const res = await logout()
+        res.status && dispatch(logoutUser())
     }
 
-    if (user.name) {
-        return (<p onClick={handleLogout}>{user.name}</p>)
+    if (currentUser.name) {
+        return (<p onClick={handleLogout}>{currentUser.name}</p>)
     } else {
         return (
             <Button.Link

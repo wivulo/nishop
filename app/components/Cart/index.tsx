@@ -1,23 +1,37 @@
 "use client";
 
-import { iProduct } from '@/app/models/iProduct';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReduxState } from '@/lib/redux';
 import { Button } from '../Button';
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
-import { decreaseQuantityPerProduct, hideCart, increaseQuantityPerProduct, removeProduct } from '@/lib/redux/Cart/cartSlice';
+import { 
+    decreaseQuantityPerProduct, 
+    hideCart, 
+    increaseQuantityPerProduct, 
+    removeProduct, 
+    updatecart
+} from '@/lib/redux/Cart/cartSlice';
 import anime from 'animejs';
 import { Productcard } from '../ProductCard';
 import { showNotification } from '@/lib/redux/Notification/notificationSlice';
 import { hideCartAnimation, showCartAnimation } from './animations';
+import { useSessionStorage, useLocalStorage } from '@react-hooks-library/core';
+import { iCart, iCartProduct } from '@/app/models/icart';
+import { iProduct } from '@/app/models/iProduct';
 
-
+const shoppingCartInitialValue = {
+    products: [] as iCartProduct[],
+        quantity: 0,
+        total: 0,
+        showCart: false
+}
 
 const Cart: React.FC = () => {
     const { showCart, products, quantity, total } = useSelector((state: ReduxState) => state.cart);
     const dispatch = useDispatch()
     const cartRef = useRef<HTMLDivElement>(null)
+    const [shoppingCart, setShoppingCart] = useSessionStorage<iCart>("Shopping-Cart", shoppingCartInitialValue)
 
     const handleCloseCart = () => dispatch(hideCart())
     const handleRemoveProduct = (id: number) => {
@@ -33,6 +47,32 @@ const Cart: React.FC = () => {
     useEffect(() => {
         showCart? showCartAnimation(anime, cartRef.current) : hideCartAnimation(anime, cartRef.current);
     }, [showCart]);
+
+    useEffect(() => {
+        let sessionShoppingCart = sessionStorage.getItem("Shopping-Cart")
+        const sessionCartSerialized = sessionShoppingCart && JSON.parse(sessionShoppingCart)
+        
+        if(quantity === -1 && (sessionCartSerialized && sessionCartSerialized.quantity)){
+            dispatch(updatecart({
+                products: sessionCartSerialized.products,
+                quantity: sessionCartSerialized.quantity,
+                total: sessionCartSerialized.total
+            }))
+        }
+    }, []);
+
+    useEffect(() => {
+        let sessionShoppingCart = shoppingCart;
+        if(quantity >= 0){
+            sessionShoppingCart = {
+                products: products,
+                quantity: quantity,
+                total: total,
+                showCart: false
+            }
+            setShoppingCart(sessionShoppingCart);
+        }
+    }, [quantity])
 
     return (
         <div ref={cartRef}
@@ -88,7 +128,7 @@ const Cart: React.FC = () => {
                 </div>
 
                 <div className='h-1/5'>
-                    <p>Quantity: {quantity}</p>
+                    <p>Quantity: {quantity >= 0 ? quantity : 0 }</p>
                     <p>Total Price: {total} $</p>
                 </div>
             </div>

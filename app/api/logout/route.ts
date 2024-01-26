@@ -1,11 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-// import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server'
 
-export async function logout(req: NextApiRequest, res: NextApiResponse){
-    // Delete the user cookie
-    res.setHeader('Set-Cookie', 'userToken=; Max-Age=0; Path=/');
-    //cookies().delete("user");
-
-    // Return a success response
-    res.status(200).json({ message: 'User logged out successfully' });
+export async function GET(req: Request, res: Response){
+    cookies().delete("user");
+    return NextResponse.json({message: 'user logout successfully', status: true });
 };

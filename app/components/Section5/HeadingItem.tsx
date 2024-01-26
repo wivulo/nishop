@@ -1,12 +1,12 @@
-import React, { ReactNode } from 'react';
+import React, { HTMLAttributes, ReactNode } from 'react';
 
-type HeadingItemProps = {
+interface iHeadingItemProps extends HTMLAttributes<HTMLDivElement> {
     children: ReactNode;
 };
 
-const HeadingItem: React.FC<HeadingItemProps> = ({ children }) => {
+const HeadingItem: React.FC<iHeadingItemProps> = ({ children, ...rest }) => {
     return (
-        <div className='w-auto h-auto'>
+        <div className='w-auto h-auto' {...rest}>
             <button className='w-[190px] h-20 grid place-content-center border-b border-base-border group'>
                 {children}
             </button>

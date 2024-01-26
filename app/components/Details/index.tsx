@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { detailAnimations } from './animations';
 import { showNotification } from '@/lib/redux/Notification/notificationSlice';
 import { addProduct } from '@/lib/redux/Cart/cartSlice';
+import { ERequestState } from '@/app/models/eRequestState';
 
 
 const Details: React.FC = () => {
@@ -25,7 +26,8 @@ const Details: React.FC = () => {
         dispatch(addProduct(product))
         // handleCloseDetail()
         dispatch(showNotification({
-            message: "Success to add product to the cart"
+            message: "Success to add product to the cart",
+            type: ERequestState.success
         }))
     }
 
@@ -52,8 +54,16 @@ const Details: React.FC = () => {
                     </p>
 
                     <ul className='flex gap-2'>
-                        {product.colors && product.colors?.map((color, index) => (
-                            <li key={index} className={`w-6 h-6 rounded-full`} style={{ backgroundColor: color }}></li>
+                        {
+                            product.colors 
+                            && 
+                            product.colors.split("#")
+                            .filter(color => color.length > 0)
+                            .map((color, i) => (
+                            <li key={i} 
+                            className={`w-6 h-6 rounded-full`} 
+                            style={{ backgroundColor: "#" + color.replace(",", "") }}>
+                            </li>
                         ))}
                     </ul>
 

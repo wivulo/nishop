@@ -9,9 +9,10 @@ import { iProduct } from '@/app/models/iProduct';
 import { useDispatch, useSelector } from 'react-redux';
 import { decrease, increase } from '@/lib/redux/carousel/carouselSlice';
 import { ReduxState } from '@/lib/redux';
+import { Product } from '@prisma/client';
 
 type Section4Type = {
-  products: Array<iProduct>
+  products: Array<Product>
 }
 
 const Section4: React.FC<Section4Type> = ({ products }) => {
@@ -33,7 +34,7 @@ const Section4: React.FC<Section4Type> = ({ products }) => {
           <ProductCarousel.Title text="Discover unique hand-picked items." />
         </ProductCarousel.Heading>
         <ProductCarousel.Items className="mx-5">
-          {products.map((item: iProduct) => {
+          {products?.map((item: Product) => {
             if (item.Emphasis === false) {
               return (
                 <li key={item.id} className="last-of-type:mr-1 first-of-type:ml-2">

@@ -58,7 +58,8 @@
             "description": "Distressed Tote Leather Bag Leather Bag",
             "price": 216.27,
             "Emphasis": false,
-            "colors": []
+            "colors": [],
+            "category": "Minimalist Style"
         },
         {
             "id": 2,
@@ -67,7 +68,8 @@
             "description": "Womens Cognac Leather Elastic Straps",
             "price": 195.13,
             "Emphasis": false,
-            "colors": []
+            "colors": [],
+            "category": "Minimalist Style"
         },
         {
             "id": 3,
@@ -76,7 +78,8 @@
             "description": "Distressed Tote Leather Bag Leather Bag",
             "price": 24.99,
             "Emphasis": false,
-            "colors": []
+            "colors": [],
+            "category": "Minimalist Style"
         },
         {
             "id": 4,
@@ -85,7 +88,8 @@
             "description": "High Top Canvas Shoes",
             "price": 9.99,
             "Emphasis": false,
-            "colors": []
+            "colors": [],
+            "category": "Minimalist Style"
         },
         {
             "id": 5,
@@ -94,7 +98,8 @@
             "description": "Rose Gold Moissanite Vintage Wedding Ring Set",
             "price": 14.99,
             "Emphasis": false,
-            "colors": []
+            "colors": [],
+            "category": "Wedding Gifts"
         },
         {
             "id": 6,
@@ -103,7 +108,8 @@
             "description": "Blue Topaz Bangle 24K Gold Plated Handmade",
             "price": 29.99,
             "Emphasis": false,
-            "colors": []
+            "colors": [],
+            "category": "Minimalist Style"
         },
         {
             "id": 7,
@@ -112,7 +118,8 @@
             "description": "Nike Air Max 270 React ENG",
             "price": 1000.99,
             "Emphasis": true,
-            "colors": []
+            "colors": [],
+            "category": "Minimalist Style"
         },
         {
             "id": 8,
@@ -121,7 +128,8 @@
             "description": "Rovena Riva Series 6 Pcs. Wide Seating Claret Red Chair",
             "price": 50.99,
             "Emphasis": true,
-            "colors": ["#7CB93E", "#33ABC6", "#1CCD8D", "#3F65EA", "#F64A69", "#A635EC", "#F9A85D"]
+            "colors": ["#7CB93E", "#33ABC6", "#1CCD8D", "#3F65EA", "#F64A69", "#A635EC", "#F9A85D"],
+            "category": "Minimalist Style"
         },
         {
             "id": 9,
@@ -130,7 +138,8 @@
             "description": "Iphone 12 128 GB (Red) Apple ",
             "price": 500.99,
             "Emphasis": true,
-            "colors": ["#7CB93E", "#3F65EA", "#F64A69", "#A635EC", "#F9A85D"]
+            "colors": ["#7CB93E", "#3F65EA", "#F64A69", "#A635EC", "#F9A85D"],
+            "category": "Anniversary Gift"
         },
         {
             "id": 10,
@@ -139,7 +148,8 @@
             "description": "Rovena Riva Series 6 Pcs. Wide Seating Claret Red Chair",
             "price": 100.99,
             "Emphasis": true,
-            "colors": ["#F64A69", "#A635EC", "#F9A85D"]
+            "colors": ["#F64A69", "#A635EC", "#F9A85D"],
+            "category": "Minimalist Style"
         }
     ]
 }

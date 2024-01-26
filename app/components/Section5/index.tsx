@@ -5,59 +5,56 @@ import Heading from './Heading';
 import HeadingItem from './HeadingItem';
 import HeadingText from './HeadingText';
 import Body from './body';
-import { iProduct } from '@/app/models/iProduct';
+import { Product } from '@prisma/client';
+import { useQueryState } from 'nuqs';
 
 interface Section5Props {
-    products: iProduct[];
+    products: Product[];
 }
 
-const initializeProductsState = (values: iProduct[]): iProduct[] => {
-    const emphasizedProducts = values.filter((value) => value.Emphasis);
-    const nonEmphasizedProducts = values.filter((value) => !value.Emphasis);
+const emphasisShifted = (values: Product[]): Product[] => {
+    const emphasizedProducts = values?.filter((value) => value.Emphasis);
+    const nonEmphasizedProducts = values?.filter((value) => !value.Emphasis);
     return [...emphasizedProducts, ...nonEmphasizedProducts];
 };
 
 
-const Section5: React.FC<Section5Props> = ({ products: prods }) => {
-    const [products, setProducts] = useState<iProduct[]>(() => initializeProductsState(prods))
-    //console.log(products);
+const Section5: React.FC<Section5Props> = ({ products }) => {
+    const [filteredProducts, setFilteredProducts] = useQueryState('product-category');
 
     return (
         <Wrapper className='my-12 px-12'>
             <div className='flex flex-col gap-12'>
                 <Heading>
-                    <HeadingItem>
-                        <HeadingText text='Modern'/>
-                        <HeadingText text='Farmhouse'/>
+                    <HeadingItem onClick={() => setFilteredProducts("Modern Farmhouse")}>
+                        <HeadingText text='Modern Farmhouse'/>
                     </HeadingItem>
 
-                    <HeadingItem>
-                        <HeadingText text='Eclectic'/> 
-                        <HeadingText text='Decor'/>
+                    <HeadingItem onClick={() => setFilteredProducts("Eclectic Decor")}>
+                        <HeadingText text='Eclectic Decor'/>
                     </HeadingItem>
 
-                    <HeadingItem>
-                        <HeadingText text='Polka Boho'/> 
-                        <HeadingText text='Decor'/>
+                    <HeadingItem onClick={() => setFilteredProducts("Polka Boho")}>
+                        <HeadingText text='Polka Boho'/>
                     </HeadingItem>
 
-                    <HeadingItem>
-                        <HeadingText text='Minimalist'/> 
-                        <HeadingText text='Style'/>
+                    <HeadingItem onClick={() => setFilteredProducts("Minimalist Style")}>
+                        <HeadingText text='Minimalist Style'/>
                     </HeadingItem>
 
-                    <HeadingItem>
-                        <HeadingText text='Anniversary'/>
-                        <HeadingText text='Gift'/>
+                    <HeadingItem onClick={() => setFilteredProducts("Anniversary Gift")}>
+                        <HeadingText text='Anniversary Gift'/>
                     </HeadingItem>
 
-                    <HeadingItem>
-                        <HeadingText text='Wedding'/>
-                        <HeadingText text='Gifts'/>
+                    <HeadingItem onClick={() => setFilteredProducts("Wedding Gifts")}>
+                        <HeadingText text='Wedding Gifts'/>
                     </HeadingItem>
                 </Heading>
 
-                <Body products={products} />
+                <Body 
+                    products={emphasisShifted(products)} 
+                    filteredProductsUseQueryState={filteredProducts}
+                />
             </div>
         </Wrapper>
     );

@@ -7,12 +7,9 @@ import Footer from '../components/Footer'
 import NewsLetters from '../components/NewsLetters'
 import localFont from 'next/font/local'
 import Details from '../components/Details'
-import Notification from "@/app/components/Notification"
 import Cart from '../components/Cart'
 import Notifications from '../components/Notifications'
 import ShoppingBag from '../components/ShoppingBag'
-import { cookies } from 'next/headers'
-import { iUser } from '../models/iUser'
 
 export const metadata: Metadata = {
   title: 'N I S H O P',

@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { iUser } from "@/app/models/iUser"
 import { cookies } from 'next/headers';
 
-interface User extends iUser{
+export interface User extends iUser{
     id: number;
 }
 
@@ -34,12 +34,12 @@ const User = createSlice({
             state.user = {id: payload.id ,name: payload.name, email: payload.email, password: payload.password}
             state.logged = true;
         },
-        logout: (state) => {
+        logoutUser: (state) => {
             state.logged = false;
             state.user = {} as User;
         },
     },
 });
 
-export const { login,  setUser} = User.actions;
+export const { login,  setUser, logoutUser} = User.actions;
 export default User.reducer;

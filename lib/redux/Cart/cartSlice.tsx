@@ -6,7 +6,7 @@ import { getTotalPrices } from './getTotal';
 
 const initialState: iCart = {
     products: [],
-    quantity: 0,
+    quantity: -1,
     total: 0,
     showCart: false
 };
@@ -28,6 +28,7 @@ const cartSlice = createSlice({
                     quatity: getQuantity(state.products, product.id) + 1
                 });
             }
+            if(state.quantity === -1) state.quantity = 0;
             state.quantity += 1;
             state.total += product.price;
         },
@@ -64,6 +65,11 @@ const cartSlice = createSlice({
             state.showCart = false;
         },
         clearCart: (state) => { },
+        updatecart: (state, {payload}) => {
+            state.products = payload.products;
+            state.quantity = payload.quantity;
+            state.total = payload.total;
+        }
     },
 });
 
@@ -74,6 +80,7 @@ export const {
     decreaseQuantityPerProduct,
     clearCart,
     showCart,
-    hideCart
+    hideCart,
+    updatecart
 } = cartSlice.actions;
 export default cartSlice.reducer;

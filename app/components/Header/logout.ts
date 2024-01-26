@@ -1,8 +1,10 @@
-import Cookies from "js-cookie";
-import { revalidatePath } from "next/cache";
+import { apiLogout } from "@/app/config";
 
 export const logout = async () => {
-    Cookies.remove("user");
-    
-    return true;
+    const res = await fetch(apiLogout);
+    if(!res.ok){
+        throw new Error("Failed to logout!");
+    }
+
+    return res.json();
 };

@@ -19,7 +19,7 @@ function ShoppingBag() {
                     bg-base-soft justify-center items-center transform transition-all duration-500
                     ${inView ? "opacity-0 translate-x-full" : "opacity-100 translate-x-0"}`}>
             <Button.Root hoverScale onClick={handleShowCart}>
-                <Button.Badge count={quantity}/>
+                <Button.Badge count={quantity >= 0 ? quantity : 0}/>
                 <Button.Icon icon={FaShoppingBag} />
             </Button.Root>
         </div>
