@@ -1,10 +1,12 @@
+"use server";
+
 import { baseURL } from "@/app/config";
 
 export const getProducts = async () => {
     try {
         // await new Promise((res, rej) => setTimeout(() => res(true), 2000)) //sleep 2s
 
-        const res = await fetch(baseURL + "/api/get-products", {
+        const res = await fetch("/api/get-products", {
             method: "GET",
         });
         if (!res.ok) {
