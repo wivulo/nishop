@@ -4,11 +4,21 @@ const prisma = new PrismaClient();
 
 async function main() {
     try {
-        await prisma.user.delete({
+
+        //verificar se o usuário já existe
+        const userExists = await prisma.user.findUnique({
             where: {
                 email: 'suport@nishop.ao'
             }
         });
+
+        if (userExists && userExists?.email) {
+            await prisma.user.delete({
+                where: {
+                    email: 'suport@nishop.ao'
+                }
+            });
+        }
 
         const user = await prisma.user.create({
             data: {
