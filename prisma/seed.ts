@@ -6,7 +6,7 @@ async function main() {
     try {
         await prisma.user.deleteMany({
             where: {
-                email: 'admin@nishop.ao'
+                email: 'suport@nishop.ao'
             }
         });
 
