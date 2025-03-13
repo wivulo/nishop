@@ -4,10 +4,10 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "postinstall": "prisma generate && tsc prisma/seed.ts --outDir dist && prisma db seed"
+    "postinstall": "prisma generate && prisma db seed"
   },
   "prisma": {
-    "seed": "node dist/prisma/seed.js"
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
