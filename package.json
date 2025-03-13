@@ -7,7 +7,7 @@
     "postinstall": "prisma generate && prisma db seed"
   },
   "prisma": {
-    "seed": "prisma/seed.ts"
+    "seed": "seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
