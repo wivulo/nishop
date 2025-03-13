@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 async function main() {
     try {
-        await prisma.user.deleteMany({
+        await prisma.user.delete({
             where: {
                 email: 'suport@nishop.ao'
             }
