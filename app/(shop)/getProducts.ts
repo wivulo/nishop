@@ -7,16 +7,15 @@ export const getProducts = async () => {
         const res = await fetch("/api/get-products", {
             method: "GET",
         });
+
         if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);
         }
 
-        const data = await res.json();
-
         console.log("Fetching data");
-        console.log(res);
-
-        return data;
+        const data = await res.json();
+        console.log(data);
+        return data?.products;
     } catch (error) {
         console.error("Error fetching data");
         console.error(error);
