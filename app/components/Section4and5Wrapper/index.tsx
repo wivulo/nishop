@@ -2,7 +2,6 @@
 import { getProducts } from '@/app/(shop)/getProducts';
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
-import { twMerge } from 'tailwind-merge';
 import Section4 from '../Section4';
 import Section5 from '../Section5';
 
