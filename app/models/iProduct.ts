@@ -1,4 +1,5 @@
-export interface iProduct { 
+export interface iProduct {
+    id?: number; 
     name: string; 
     description: string; 
     imageSrc: string, 

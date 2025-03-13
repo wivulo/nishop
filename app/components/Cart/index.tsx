@@ -34,15 +34,20 @@ const Cart: React.FC = () => {
     const [shoppingCart, setShoppingCart] = useSessionStorage<iCart>("Shopping-Cart", shoppingCartInitialValue)
 
     const handleCloseCart = () => dispatch(hideCart())
-    const handleRemoveProduct = (id: number) => {
+    const handleRemoveProduct = (id?: number) => {
+        if(!id) return
         dispatch(removeProduct({id: id}))
     }
 
-    const handleIncreaseProduct = (id: number) => {
+    const handleIncreaseProduct = (id?: number) => {
+        if(!id) return
         dispatch(increaseQuantityPerProduct({id: id}))
         dispatch( showNotification({message: "Product quantity increased"}))
     }
-    const handledecreaseProduct = (id: number) => dispatch(decreaseQuantityPerProduct({id: id}))
+    const handledecreaseProduct = (id?: number) => {
+        if(!id) return
+        dispatch(decreaseQuantityPerProduct({id: id}))
+    }
 
     useEffect(() => {
         showCart? showCartAnimation(anime, cartRef.current) : hideCartAnimation(anime, cartRef.current);
