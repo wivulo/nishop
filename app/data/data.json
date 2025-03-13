@@ -57,7 +57,7 @@
             "description": "Distressed Tote Leather Bag Leather Bag",
             "price": 216.27,
             "Emphasis": false,
-            "colors": "",
+            "colors": [],
             "category": "Minimalist Style"
         },
         {
@@ -66,7 +66,7 @@
             "description": "Womens Cognac Leather Elastic Straps",
             "price": 195.13,
             "Emphasis": false,
-            "colors":"",
+            "colors": [],
             "category": "Minimalist Style"
         },
         {
@@ -75,7 +75,7 @@
             "description": "Distressed Tote Leather Bag Leather Bag",
             "price": 24.99,
             "Emphasis": false,
-            "colors":"",
+            "colors": [],
             "category": "Minimalist Style"
         },
         {
@@ -84,7 +84,7 @@
             "description": "High Top Canvas Shoes",
             "price": 9.99,
             "Emphasis": false,
-            "colors":"",
+            "colors": [],
             "category": "Minimalist Style"
         },
         {
@@ -93,7 +93,7 @@
             "description": "Rose Gold Moissanite Vintage Wedding Ring Set",
             "price": 14.99,
             "Emphasis": false,
-            "colors":"",
+            "colors": [],
             "category": "Wedding Gifts"
         },
         {
@@ -102,7 +102,7 @@
             "description": "Blue Topaz Bangle 24K Gold Plated Handmade",
             "price": 29.99,
             "Emphasis": false,
-            "colors":"",
+            "colors": [],
             "category": "Minimalist Style"
         },
         {
@@ -111,7 +111,7 @@
             "description": "Nike Air Max 270 React ENG",
             "price": 1000.99,
             "Emphasis": true,
-            "colors":"",
+            "colors": [],
             "category": "Minimalist Style"
         },
         {

@@ -34,7 +34,7 @@ export default function AdminPage() {
                 <div className='grid place-content-center'>
                     <ul className='w-1/2 h-full flex flex-col gap-3'>
                         {data.products.map(prod => (
-                            <li key={prod.id} onClick={() => handleAddProductIntoDB(prod)}>
+                            <li key={prod.name} onClick={() => handleAddProductIntoDB(prod)}>
                                 <p>{prod.description}</p>
                                 <p>{prod.category}</p>
                             </li>
