@@ -1,6 +1,9 @@
 const PrismaClient = require('@prisma/client').PrismaClient;
+const data = require('../app/data/data.json');
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+    log: ['query', 'info', 'warn', 'error'],
+});
 
 async function main() {
     try {
@@ -30,6 +33,28 @@ async function main() {
 
         console.log('Admin User created: ');
         console.log(user);
+
+        //criar productos
+        console.log('Creating products...');
+        for (const product of data.products) {
+            const productExists = await prisma.product.findUnique({
+                where: {
+                    name: product.name
+                }
+            });
+
+            if (productExists && productExists?.name) {
+                await prisma.product.delete({
+                    where: {
+                        name: product.name
+                    }
+                });
+            }
+
+            await prisma.product.create({
+                data: product
+            });
+        }
     } catch (error) {
         console.error(error);
         await prisma.$disconnect();

@@ -25,6 +25,6 @@ model Product {
   imageSrc    String
   price       Float
   Emphasis    Boolean
-  colors      String
+  colors      Json?
   category    String
 }
