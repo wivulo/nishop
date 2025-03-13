@@ -8,7 +8,7 @@ import React from "react";
 interface iButtonProps extends LinkProps, HtmlHTMLAttributes<HTMLAnchorElement>{
     text: string;
     isActiveLink: boolean;
-    children: any;
+    children?: any;
 }
 
 export default function ButtonLink({children , text, href, isActiveLink, ...rest }: iButtonProps){
