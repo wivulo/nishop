@@ -38,11 +38,13 @@ export const ProductListItem = ({ product, onOpenProductDetail, index }: iProduc
                         />
                         <Productcard.Description text={product.description} />
                         <Productcard.Colors>
-                            {product.colors.split("#").filter(color => color.length > 0).map(
+                            {
+                            Array.isArray(product.colors) &&
+                            product.colors?.filter((color: any) => color.length > 0).map(
                                 (color, i) => (
                                     <Productcard.Color
                                         key={i}
-                                        color={"#" + color.replace(",", "")}
+                                        color={"#" + color}
                                     />
                                 )
                             )}

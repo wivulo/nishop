@@ -56,13 +56,15 @@ const Details: React.FC = () => {
                     <ul className='flex gap-2'>
                         {
                             product.colors 
+                            &&
+                            Array.isArray(product.colors)
                             && 
-                            product.colors.split("#")
-                            .filter(color => color.length > 0)
+                            product.colors
+                            .filter((color: any) => color?.length > 0)
                             .map((color, i) => (
                             <li key={i} 
                             className={`w-6 h-6 rounded-full`} 
-                            style={{ backgroundColor: "#" + color.replace(",", "") }}>
+                            style={{ backgroundColor: "#" + color }}>
                             </li>
                         ))}
                     </ul>
