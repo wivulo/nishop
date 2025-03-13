@@ -11,6 +11,7 @@ import { decrease, increase } from '@/lib/redux/carousel/carouselSlice';
 import { ReduxState } from '@/lib/redux';
 import { Product } from '@prisma/client';
 import { ProductListSkelton } from '../ProductListSkelton';
+import { openDetail } from '@/lib/redux/Details/detailsSlice';
 
 type Section4Type = {
   products: Array<Product>,
@@ -28,6 +29,10 @@ const Section4: React.FC<Section4Type> = ({ products, ispedding }) => {
   const handleMoveScrollLeft = (value: number) => {
     dispatch(decrease({ scroll: value }))
   }
+  
+      const handleOpenDetail = (product: Product) => {
+          dispatch(openDetail(product));
+      };
 
   return (
     <Wrapper className="my-12">
@@ -43,7 +48,7 @@ const Section4: React.FC<Section4Type> = ({ products, ispedding }) => {
             products?.map((item: Product) => {
               if (item.Emphasis === false) {
                 return (
-                  <li key={item.id} className="last-of-type:mr-1 first-of-type:ml-2">
+                  <li key={item.id} className="last-of-type:mr-1 first-of-type:ml-2" onClick={() => handleOpenDetail(item)}>
                     <Productcard.Root>
                       <Productcard.Like />
                       <Productcard.Image src={item.imageSrc} width={500} height={500} alt={item.name} />

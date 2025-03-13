@@ -1,7 +1,7 @@
 import { baseURL } from "@/app/config";
 
 export const getProducts = async () => {
-    await new Promise((res, rej) => setTimeout(() => res(true), 2000)) //sleep 2s
+    // await new Promise((res, rej) => setTimeout(() => res(true), 2000)) //sleep 2s
 
     const res = await fetch(baseURL + "api/get-products", {
         method: "GET",

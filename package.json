@@ -4,7 +4,10 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate && prisma db seed"
+  },
+  "prisma": {
+    "seed": "prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
