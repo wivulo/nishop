@@ -23,7 +23,7 @@ export async function POST(req: Request, res: Response) {
                     description: description,
                     price: price,
                     imageSrc: imageSrc,
-                    colors: colors.toString(),
+                    colors: colors ?? [],
                     Emphasis: Emphasis,
                     category: category
                 }
