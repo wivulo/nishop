@@ -45,21 +45,22 @@ const Body: React.FC<BodyProps> = ({ products, filteredProductsUseQueryState: fi
                                     />
                                     <Productcard.Description text={product.description} />
                                     {
+                                        Array.isArray(product.colors) &&
                                         product.colors.length > 0
                                         &&
                                         (<Productcard.Colors>
-                                            {product.colors.split("#").filter(color => color.length > 0).map(
+                                            {product.colors?.filter((color: any) => color.length > 0).map(
                                                 (color, i) => (
                                                     <Productcard.Color
                                                         key={i}
-                                                        color={"#" + color.replace(",", "")}
+                                                        color={"#" + color}
                                                     />
                                                 )
                                             )}
                                         </Productcard.Colors>)
                                     }
                                     <Productcard.Price
-                                        className={`${!product.colors.length && "absolute bottom-7"}`}
+                                        className={`${Array.isArray(product.colors) && !product.colors?.length && "absolute bottom-7"}`}
                                         price={product.price}
                                     />
                                 </Productcard.Root>
