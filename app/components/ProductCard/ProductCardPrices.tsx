@@ -6,9 +6,11 @@ interface ProductCardPricesProps extends HTMLAttributes<HTMLDivElement>{
 }
 
 const ProductCardPrices: React.FC<ProductCardPricesProps> = ({ price, ...rest }) => {
+    const formattedPrice = Number.isFinite(price) ? price.toLocaleString('pt-AO') : '—';
+
     return (
         <div {...rest} className={twMerge("", rest.className)}>
-            <span className='text-sm font-semibold text-text-6'>Preço: {price.toLocaleString('pt-AO')} Kz</span>
+            <span className='text-sm font-semibold text-text-6'>Preço: {formattedPrice} Kz</span>
         </div>
     );
 };

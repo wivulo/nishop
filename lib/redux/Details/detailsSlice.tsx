@@ -3,12 +3,12 @@ import { Product } from '@prisma/client';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface DetailState {
-    product: Product;
+    product: Product | null;
     isOpen: boolean;
 }
 
 const initialState: DetailState = {
-    product: {} as Product,
+    product: null,
     isOpen: false,
 };
 
@@ -22,7 +22,7 @@ const detailSlice = createSlice({
         },
         closeDetail: (state) => {
             state.isOpen = false;
-            state.product = {} as Product;
+            state.product = null;
         }
     },
 });

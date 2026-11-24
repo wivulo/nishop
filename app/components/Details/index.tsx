@@ -23,6 +23,7 @@ const Details: React.FC = () => {
     const handleCloseDetail = () => dispatch(closeDetail());
 
     const handleAddToCart = () => {
+        if (!product) return;
         dispatch(addProduct(product))
         // handleCloseDetail()
         dispatch(showNotification({
@@ -38,6 +39,8 @@ const Details: React.FC = () => {
             detail && detailAnimations.expandAnimation(detail, isOpen)
     }, [isOpen]);
 
+    if (!isOpen || !product) return null;
+
     return (
         <div ref={detailRef} className={`${isOpen ? "grid" : "hidden"} place-content-center w-screen h-screen fixed left-0 top-0 bg-base-graybackground z-50 overflow-hidden`}>
 
@@ -50,7 +53,7 @@ const Details: React.FC = () => {
                     </p>
 
                     <p>
-                        Preço: <span className='font-semibold'>{product.price.toLocaleString('pt-AO')} Kz</span>
+                        Preço: <span className='font-semibold'>{Number.isFinite(product.price) ? product.price.toLocaleString('pt-AO') : '—'} Kz</span>
                     </p>
 
                     <ul className='flex gap-2'>

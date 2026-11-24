@@ -257,7 +257,7 @@ const Cart: React.FC = () => {
 
                 <div className='shrink-0 py-2'>
                     <p>Quantity: {quantity >= 0 ? quantity : 0 }</p>
-                    <p>Total: {total.toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kz</p>
+                    <p>Total: {(Number.isFinite(total) ? total : 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kz</p>
                 </div>
 
                 <form onSubmit={handleCheckout} className='mt-3 flex flex-col gap-2 border-t border-main-border pt-3'>
