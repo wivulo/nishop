@@ -8,7 +8,7 @@ interface ProductCardPricesProps extends HTMLAttributes<HTMLDivElement>{
 const ProductCardPrices: React.FC<ProductCardPricesProps> = ({ price, ...rest }) => {
     return (
         <div {...rest} className={twMerge("", rest.className)}>
-            <span className='text-sm font-semibold text-text-6'>Price: ${price}</span>
+            <span className='text-sm font-semibold text-text-6'>Preço: {price.toLocaleString('pt-AO')} Kz</span>
         </div>
     );
 };

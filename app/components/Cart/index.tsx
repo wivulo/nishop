@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { FormEvent, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReduxState } from '@/lib/redux';
 import { Button } from '../Button';
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { 
     decreaseQuantityPerProduct, 
+    clearCart,
     hideCart, 
     increaseQuantityPerProduct, 
     removeProduct, 
@@ -20,6 +21,25 @@ import { useSessionStorage, useLocalStorage } from '@react-hooks-library/core';
 import { iCart, iCartProduct } from '@/app/models/icart';
 import { iProduct } from '@/app/models/iProduct';
 
+type BayqiPayment = {
+    paymentId: string;
+    status: string;
+    merchantReference: string;
+    amount?: number;
+    currency?: string;
+};
+
+const checkoutAttemptStorageKey = 'nishop-bayqi-checkout-attempt';
+
+const paymentStatusText: Record<string, string> = {
+    CREATED: 'Pedido criado. Aguardando a confirmação na BayQi Wallet.',
+    PENDING_CUSTOMER: 'Abre a BayQi Wallet e confirma este pagamento. PIN e OTP são introduzidos apenas na Wallet.',
+    PROCESSING: 'A BayQi está a confirmar o pagamento.',
+    SUCCEEDED: 'Pagamento confirmado pela BayQi.',
+    FAILED: 'Pagamento recusado ou não concluído. Podes tentar novamente.',
+    UNKNOWN: 'O estado ainda está a ser confirmado. Consulta novamente antes de repetir o pagamento.',
+};
+
 const shoppingCartInitialValue = {
     products: [] as iCartProduct[],
         quantity: 0,
@@ -32,6 +52,12 @@ const Cart: React.FC = () => {
     const dispatch = useDispatch()
     const cartRef = useRef<HTMLDivElement>(null)
     const [shoppingCart, setShoppingCart] = useSessionStorage<iCart>("Shopping-Cart", shoppingCartInitialValue)
+    const [bayqiTag, setBayqiTag] = useState('');
+    const [payment, setPayment] = useState<BayqiPayment | null>(null);
+    const [checkoutError, setCheckoutError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [pollMessage, setPollMessage] = useState('');
+    const [pollCycle, setPollCycle] = useState(0);
 
     const handleCloseCart = () => dispatch(hideCart())
     const handleRemoveProduct = (id?: number) => {
@@ -79,6 +105,103 @@ const Cart: React.FC = () => {
         }
     }, [quantity])
 
+    useEffect(() => {
+        if (!payment || !['CREATED', 'PENDING_CUSTOMER', 'PROCESSING', 'UNKNOWN'].includes(payment.status)) return;
+
+        let active = true;
+        let attempts = 0;
+        let timer: ReturnType<typeof setTimeout> | undefined;
+
+        const poll = async () => {
+            if (!active) return;
+            if (attempts >= 22) {
+                setPollMessage('A confirmação está a demorar. Podes consultar o estado novamente sem criar outra cobrança.');
+                return;
+            }
+
+            timer = setTimeout(async () => {
+                attempts += 1;
+                try {
+                    const response = await fetch(`/api/bayqi/payments/${encodeURIComponent(payment.paymentId)}`, {
+                        cache: 'no-store',
+                    });
+                    const result = await response.json();
+                    if (!response.ok) throw new Error(result.message ?? 'Não foi possível consultar o pagamento.');
+                    if (!active) return;
+                    setPayment(current => current ? { ...current, status: result.status } : current);
+                    setPollMessage('');
+                } catch (error) {
+                    if (active) setPollMessage(error instanceof Error ? error.message : 'Falha ao consultar o estado.');
+                }
+                poll();
+            }, 3000);
+        };
+
+        poll();
+        return () => {
+            active = false;
+            if (timer) clearTimeout(timer);
+        };
+    }, [payment?.paymentId, payment?.status, pollCycle]);
+
+    useEffect(() => {
+        if (payment?.status === 'SUCCEEDED') {
+            dispatch(clearCart());
+            sessionStorage.removeItem(checkoutAttemptStorageKey);
+        } else if (payment?.status === 'FAILED') {
+            sessionStorage.removeItem(checkoutAttemptStorageKey);
+        }
+    }, [payment?.status, dispatch]);
+
+    const handleCheckout = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!products.length || isSubmitting || (payment && !['FAILED', 'SUCCEEDED'].includes(payment.status))) return;
+
+        setIsSubmitting(true);
+        setCheckoutError('');
+        setPollMessage('');
+        setPayment(null);
+
+        const normalizedTag = bayqiTag.trim();
+        const items = products.map(item => ({ productId: item.product.id, quantity: item.quatity }));
+        const fingerprint = JSON.stringify({ items, bayqiTag: normalizedTag });
+        let attemptId: string;
+        try {
+            const saved = sessionStorage.getItem(checkoutAttemptStorageKey);
+            const parsed = saved ? JSON.parse(saved) as { fingerprint?: string; attemptId?: string } : null;
+            attemptId = parsed?.fingerprint === fingerprint && parsed.attemptId
+                ? parsed.attemptId
+                : window.crypto.randomUUID();
+            sessionStorage.setItem(checkoutAttemptStorageKey, JSON.stringify({ fingerprint, attemptId }));
+        } catch {
+            attemptId = window.crypto.randomUUID();
+        }
+
+        try {
+            const response = await fetch('/api/bayqi/payments', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ items, bayqiTag: normalizedTag, attemptId }),
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                const supportRef = result.requestId ? ` Referência de suporte: ${result.requestId}.` : '';
+                throw new Error((result.message ?? 'Não foi possível iniciar o pagamento.') + supportRef);
+            }
+            setPayment({
+                paymentId: result.paymentId,
+                status: result.status,
+                merchantReference: result.merchantReference,
+                amount: result.amount,
+                currency: result.currency,
+            });
+        } catch (error) {
+            setCheckoutError(error instanceof Error ? error.message : 'Não foi possível iniciar o pagamento.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div ref={cartRef}
             className={`fixed flex transform ${showCart ? "translate-x-0" : "translate-x-full"} right-0 top-0
@@ -92,10 +215,10 @@ const Cart: React.FC = () => {
                 </Button.Root>
             </div>
 
-            <div className='flex flex-col w-full'>
-                <div className='w-full h-4/5 overflow-hidden'>
+            <div className='flex h-full min-h-0 w-full flex-col'>
+                <div className='w-full min-h-0 flex-1 overflow-y-auto'>
                     <ul className={`h-auto w-full overflow-y-auto flex flex-col 
-                        ${!products.length && " h-full justify-center items-center"} relative overflow-hidden`
+                        ${!products.length && " h-full justify-center items-center"} relative`
                     }>
                         {
                             products.length > 0 ?
@@ -132,10 +255,53 @@ const Cart: React.FC = () => {
                     </ul>
                 </div>
 
-                <div className='h-1/5'>
+                <div className='shrink-0 py-2'>
                     <p>Quantity: {quantity >= 0 ? quantity : 0 }</p>
-                    <p>Total Price: {total} $</p>
+                    <p>Total: {total.toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kz</p>
                 </div>
+
+                <form onSubmit={handleCheckout} className='mt-3 flex flex-col gap-2 border-t border-main-border pt-3'>
+                    <label htmlFor='bayqi-tag' className='text-sm font-semibold'>BayQi Tag do pagador</label>
+                    <input
+                        id='bayqi-tag'
+                        value={bayqiTag}
+                        onChange={event => setBayqiTag(event.target.value)}
+                        placeholder='@cliente-teste'
+                        maxLength={64}
+                        required
+                        className='rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900'
+                        autoComplete='off'
+                    />
+                    <button
+                        type='submit'
+                        disabled={!products.length || isSubmitting || Boolean(payment && !['FAILED', 'SUCCEEDED'].includes(payment.status))}
+                        className='rounded bg-main-third px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50'
+                    >
+                        {isSubmitting ? 'A iniciar pagamento…' : 'Pagar com BayQi'}
+                    </button>
+                    <p className='text-xs text-gray-600'>O PIN e o OTP, se necessários, são confirmados apenas na BayQi Wallet.</p>
+
+                    {checkoutError && <p role='alert' className='text-sm text-red-700'>{checkoutError}</p>}
+                    {payment && (
+                        <div aria-live='polite' className='rounded border border-gray-200 bg-white p-3 text-sm text-gray-800'>
+                            <p className='font-semibold'>{paymentStatusText[payment.status] ?? `Estado: ${payment.status}`}</p>
+                            {payment.amount !== undefined && <p className='mt-1'>Valor: {payment.amount.toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {payment.currency === 'AOA' ? 'Kz' : payment.currency}</p>}
+                            <p className='mt-1 text-xs'>Referência: {payment.merchantReference}</p>
+                            <p className='text-xs'>Pagamento: {payment.paymentId}</p>
+                            {pollMessage && <p className='mt-2 text-amber-800'>{pollMessage}</p>}
+                            {['CREATED', 'PENDING_CUSTOMER', 'PROCESSING', 'UNKNOWN'].includes(payment.status) && (
+                                <button
+                                    type='button'
+                                    onClick={() => { setPollMessage(''); setPollCycle(value => value + 1); }}
+                                    className='mt-2 text-xs font-semibold underline'
+                                >
+                                    Consultar estado agora
+                                </button>
+                            )}
+                            {payment.status === 'SUCCEEDED' && <p className='mt-2 font-semibold text-green-700'>Compra concluída.</p>}
+                        </div>
+                    )}
+                </form>
             </div>
 
         </div>

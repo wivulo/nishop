@@ -64,7 +64,11 @@ const cartSlice = createSlice({
         hideCart: (state) => {
             state.showCart = false;
         },
-        clearCart: (state) => { },
+        clearCart: (state) => {
+            state.products = [];
+            state.quantity = 0;
+            state.total = 0;
+        },
         updatecart: (state, {payload}) => {
             state.products = payload.products;
             state.quantity = payload.quantity;

@@ -50,7 +50,7 @@ const Details: React.FC = () => {
                     </p>
 
                     <p>
-                        Price: <span className='font-semibold'>{product.price}</span> $
+                        Preço: <span className='font-semibold'>{product.price.toLocaleString('pt-AO')} Kz</span>
                     </p>
 
                     <ul className='flex gap-2'>
