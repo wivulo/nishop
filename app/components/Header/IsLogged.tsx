@@ -53,11 +53,11 @@ export default function IsLogged({ user }: iIsLogged) {
             <Button.Link
                 href={"/login"}
                 isActiveLink={false}
-                text='Account'
+                text='Conta'
                 className='text-main-medium flex gap-2'
             >
                 <Button.Icon icon={FaUser} />
-                Account
+                Conta
             </Button.Link>
         )
     }

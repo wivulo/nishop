@@ -1,62 +1,27 @@
 "use client";
 
-import React, { use, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useQueryState } from 'nuqs';
-import { Input } from '../CustomInput';
-import { FaSearch } from 'react-icons/fa'
-import { Button } from '../Button';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation'
+import { FaSearch } from 'react-icons/fa';
 
-const searchData = ["Chocolate", "Coconut", "Strawberry"]
+export default function SearchProduct() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const [query, setQuery] = useQueryState('product');
+  const [value, setValue] = useState(query || '');
 
-const SearchProduct: React.FC = () => {
-    const [product, setProduct] = useState<string>('');
-    const [filteredProduct, setFilteredProduct] = useQueryState('product');
+  useEffect(() => { setValue(query || ''); }, [query]);
 
-    const pathname = usePathname()
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const term = value.trim();
+    if (pathname === '/products') void setQuery(term || null);
+    else router.push(term ? `/products?product=${encodeURIComponent(term)}` : '/products');
+  };
 
-    return (
-        <>
-            <Input.Root>
-                <Input.Combo data={searchData}></Input.Combo>
-                {
-                    !pathname.includes("/products") ?
-                        (
-                            <>
-                                <Input.Input
-                                    placeholder="Search anything"
-                                    name="searchFild1"
-                                    onChange={e => setProduct(e.currentTarget.value)}
-                                />
-
-                                <Button.Root hoverScale className='mr-3'>
-                                    <Link href={`/products?product=${product}`} passHref>
-                                        <Button.Icon icon={FaSearch} className='text-lg' />
-                                    </Link>
-                                </Button.Root>
-                            </>
-                        )
-                        :
-                        (
-                            <>
-                                <Input.Input
-                                    placeholder="Search anything"
-                                    name="searchFild3"
-                                    onChange={e => setFilteredProduct(e.currentTarget.value)}
-                                />
-
-                                <Button.Root hoverScale className='mr-3'>
-                                    <Link href={`/products?product=${filteredProduct}`} passHref>
-                                        <Button.Icon icon={FaSearch} className='text-lg' />
-                                    </Link>
-                                </Button.Root>
-                            </>
-                        )
-                }
-            </Input.Root>
-        </>
-    );
-};
-
-export default SearchProduct;
+  return <form onSubmit={submit} role="search" className="flex min-w-0 flex-1 items-center rounded-full border border-[#e9ddd2] bg-white px-4 py-2.5 transition-colors focus-within:border-main-primary">
+    <input aria-label="Pesquisar produtos" value={value} onChange={(event) => setValue(event.target.value)} placeholder="Pesquisar produtos" className="w-full min-w-0 bg-transparent text-sm text-main-regular outline-none placeholder:text-main-medium" />
+    <button type="submit" aria-label="Pesquisar" className="ml-2 grid h-8 w-8 shrink-0 place-items-center rounded-full text-main-primary transition-colors hover:bg-[#fff0e5]"><FaSearch aria-hidden="true" /></button>
+  </form>;
+}

@@ -9,9 +9,9 @@ export default function Logo({ ...rest }: iLogoProps) {
     return (
         <div {...rest} className={twMerge(`logo w-auto`, rest.className)}>
             <Link href={"/"} className='group'>
-                <h1 className='text-main-third text-xl font-extrabold '>
-                    N I - S H O P
-                </h1>
+                <span className='whitespace-nowrap text-xl font-extrabold tracking-[.15em] text-main-primary sm:text-2xl'>
+                    NI·SHOP
+                </span>
             </Link>
         </div>
     )

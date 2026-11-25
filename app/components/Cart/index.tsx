@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FormEvent, useEffect, useRef, useState } from 'react';
+import React, { FormEvent, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReduxState } from '@/lib/redux';
 import { Button } from '../Button';
@@ -13,10 +13,8 @@ import {
     removeProduct, 
     updatecart
 } from '@/lib/redux/Cart/cartSlice';
-import anime from 'animejs';
 import { Productcard } from '../ProductCard';
 import { showNotification } from '@/lib/redux/Notification/notificationSlice';
-import { hideCartAnimation, showCartAnimation } from './animations';
 import { useSessionStorage, useLocalStorage } from '@react-hooks-library/core';
 import { iCart, iCartProduct } from '@/app/models/icart';
 import { iProduct } from '@/app/models/iProduct';
@@ -50,7 +48,6 @@ const shoppingCartInitialValue = {
 const Cart: React.FC = () => {
     const { showCart, products, quantity, total } = useSelector((state: ReduxState) => state.cart);
     const dispatch = useDispatch()
-    const cartRef = useRef<HTMLDivElement>(null)
     const [shoppingCart, setShoppingCart] = useSessionStorage<iCart>("Shopping-Cart", shoppingCartInitialValue)
     const [bayqiTag, setBayqiTag] = useState('');
     const [payment, setPayment] = useState<BayqiPayment | null>(null);
@@ -68,16 +65,12 @@ const Cart: React.FC = () => {
     const handleIncreaseProduct = (id?: number) => {
         if(!id) return
         dispatch(increaseQuantityPerProduct({id: id}))
-        dispatch( showNotification({message: "Product quantity increased"}))
+        dispatch( showNotification({message: "Quantidade atualizada."}))
     }
     const handledecreaseProduct = (id?: number) => {
         if(!id) return
         dispatch(decreaseQuantityPerProduct({id: id}))
     }
-
-    useEffect(() => {
-        showCart? showCartAnimation(anime, cartRef.current) : hideCartAnimation(anime, cartRef.current);
-    }, [showCart]);
 
     useEffect(() => {
         let sessionShoppingCart = sessionStorage.getItem("Shopping-Cart")
@@ -203,15 +196,15 @@ const Cart: React.FC = () => {
     };
 
     return (
-        <div ref={cartRef}
-            className={`fixed flex transform ${showCart ? "translate-x-0" : "translate-x-full"} right-0 top-0
-            w-96 h-screen bg-base-soft shadow shadow-black z-[70] px-3 pt-20 transition-all`}
+        <>
+        {showCart && <button type="button" aria-label="Fechar carrinho" onClick={handleCloseCart} className="fixed inset-0 z-[69] bg-[#1b1714]/50 backdrop-blur-sm" />}
+        <aside aria-label="Carrinho de compras" aria-hidden={!showCart}
+            className={`fixed right-0 top-0 z-[70] flex h-[100dvh] w-full max-w-md flex-col bg-[#fdfbf8] px-5 pb-5 pt-20 shadow-2xl transition-transform duration-300 ease-out sm:px-7 ${showCart ? "translate-x-0" : "pointer-events-none translate-x-full"}`}
         >
-            <div className='absolute top-0 left-0 flex justify-between w-full p-2'>
-                <h3 className='text-main-third text-3xl font-semibold'>Cart</h3>
-
-                <Button.Root className='group' onClick={handleCloseCart}>
-                    <Button.Icon icon={FaTimes} className='group-hover:text-[#ff0000]' />
+            <div className='absolute left-0 top-0 flex w-full items-center justify-between border-b border-[#eee6de] px-5 py-4 sm:px-7'>
+                <h3 className='text-xl font-bold text-main-regular'>O teu carrinho</h3>
+                <Button.Root className='grid h-9 w-9 place-items-center bg-white text-main-regular hover:bg-[#fff0e5]' onClick={handleCloseCart}>
+                    <Button.Icon icon={FaTimes} />
                 </Button.Root>
             </div>
 
@@ -223,8 +216,8 @@ const Cart: React.FC = () => {
                         {
                             products.length > 0 ?
                                 products.map(cartItem => (
-                                    <li key={cartItem.product.id} className='relative animate-translateX'>
-                                        <Productcard.Root className='flex-row w-full h-24'>
+                                    <li key={cartItem.product.id} className='relative mb-3 rounded-2xl border border-[#eee6de] bg-white p-2'>
+                                        <Productcard.Root className='flex-row w-full h-24 border-0 shadow-none'>
                                             <Productcard.Image src={cartItem.product.imageSrc} width={300} height={300} className='w-20 h-20 basis-1/3' alt={cartItem.product.name} />
                                             <Productcard.Description text={cartItem.product.description} className='basis-2/3' />
                                             <Productcard.Remove className='my-6' onClick={() => handleRemoveProduct(cartItem.product.id)}/>
@@ -248,19 +241,19 @@ const Cart: React.FC = () => {
                                 :
                                 (
                                     <div className='flex'>
-                                        <p className='text-center text-xs text-text-2 font-semibold'>Please, select some product to view here!</p>
+                                        <p className='text-center text-sm text-main-medium'>O carrinho está vazio. Explora a coleção e escolhe algo especial.</p>
                                     </div>
                                 )
                         }
                     </ul>
                 </div>
 
-                <div className='shrink-0 py-2'>
-                    <p>Quantity: {quantity >= 0 ? quantity : 0 }</p>
-                    <p>Total: {(Number.isFinite(total) ? total : 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kz</p>
+                <div className='flex shrink-0 items-center justify-between border-t border-[#eee6de] py-4 text-sm text-main-medium'>
+                    <p>{quantity >= 0 ? quantity : 0 } {quantity === 1 ? 'produto' : 'produtos'}</p>
+                    <p className="text-lg font-bold text-main-regular">{(Number.isFinite(total) ? total : 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} Kz</p>
                 </div>
 
-                <form onSubmit={handleCheckout} className='mt-3 flex flex-col gap-2 border-t border-main-border pt-3'>
+                <form onSubmit={handleCheckout} className='flex flex-col gap-2 border-t border-[#eee6de] pt-4'>
                     <label htmlFor='bayqi-tag' className='text-sm font-semibold'>BayQi Tag do pagador</label>
                     <input
                         id='bayqi-tag'
@@ -269,26 +262,26 @@ const Cart: React.FC = () => {
                         placeholder='@cliente-teste'
                         maxLength={64}
                         required
-                        className='rounded border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900'
+                        className='rounded-2xl border border-[#e9ddd2] bg-white px-4 py-3 text-sm text-main-regular focus:border-main-primary'
                         autoComplete='off'
                     />
                     <button
                         type='submit'
                         disabled={!products.length || isSubmitting || Boolean(payment && !['FAILED', 'SUCCEEDED'].includes(payment.status))}
-                        className='rounded bg-main-third px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50'
+                        className='shop-button shop-button-primary disabled:cursor-not-allowed disabled:opacity-50'
                     >
                         {isSubmitting ? 'A iniciar pagamento…' : 'Pagar com BayQi'}
                     </button>
-                    <p className='text-xs text-gray-600'>O PIN e o OTP, se necessários, são confirmados apenas na BayQi Wallet.</p>
+                    <p className='text-xs leading-5 text-main-medium'>O PIN e o OTP, se necessários, são confirmados apenas na BayQi Wallet.</p>
 
-                    {checkoutError && <p role='alert' className='text-sm text-red-700'>{checkoutError}</p>}
+                    {checkoutError && <p role='alert' className='text-sm text-system-error'>{checkoutError}</p>}
                     {payment && (
-                        <div aria-live='polite' className='rounded border border-gray-200 bg-white p-3 text-sm text-gray-800'>
+                        <div aria-live='polite' className='rounded-2xl border border-[#eee6de] bg-white p-3 text-sm text-main-regular'>
                             <p className='font-semibold'>{paymentStatusText[payment.status] ?? `Estado: ${payment.status}`}</p>
                             {payment.amount !== undefined && <p className='mt-1'>Valor: {payment.amount.toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {payment.currency === 'AOA' ? 'Kz' : payment.currency}</p>}
                             <p className='mt-1 text-xs'>Referência: {payment.merchantReference}</p>
                             <p className='text-xs'>Pagamento: {payment.paymentId}</p>
-                            {pollMessage && <p className='mt-2 text-amber-800'>{pollMessage}</p>}
+                            {pollMessage && <p className='mt-2 text-system-warning'>{pollMessage}</p>}
                             {['CREATED', 'PENDING_CUSTOMER', 'PROCESSING', 'UNKNOWN'].includes(payment.status) && (
                                 <button
                                     type='button'
@@ -298,13 +291,14 @@ const Cart: React.FC = () => {
                                     Consultar estado agora
                                 </button>
                             )}
-                            {payment.status === 'SUCCEEDED' && <p className='mt-2 font-semibold text-green-700'>Compra concluída.</p>}
+                            {payment.status === 'SUCCEEDED' && <p className='mt-2 font-semibold text-system-success'>Compra concluída.</p>}
                         </div>
                     )}
                 </form>
             </div>
 
-        </div>
+        </aside>
+        </>
     );
 };
 

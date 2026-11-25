@@ -1,24 +1,23 @@
 "use client";
 
-import React from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { ReduxState } from '@/lib/redux';
-import Notification from "@/app/components/Notification";
+import { hideNotification } from '@/lib/redux/Notification/notificationSlice';
+import Notification from '@/app/components/Notification';
 
-const Notifications: React.FC = () => {
-    const {isOpen, notifications} = useSelector((state: ReduxState) => state.notification);
+export default function Notifications() {
+  const { notifications } = useSelector((state: ReduxState) => state.notification);
+  const dispatch = useDispatch();
 
-    return (
-        <div className={`flex fixed z-[60] top-5 self-center w-full h-auto`}>
-            <ul className='flex w-full flex-col gap-3 justify-center items-center'>
-                {
-                    notifications.map(notification => (
-                        <Notification isOpen message={notification.message} key={notification.id} type={notification.type} />
-                    ))
-                }
-            </ul>
-        </div>
-    );
-};
+  useEffect(() => {
+    if (!notifications.length) return;
+    const timer = window.setTimeout(() => dispatch(hideNotification()), 3500);
+    return () => window.clearTimeout(timer);
+  }, [notifications.length, dispatch]);
 
-export default Notifications;
+  if (!notifications.length) return null;
+  return <ul className="pointer-events-none fixed right-4 top-4 z-[80] flex w-[min(24rem,calc(100vw-2rem))] flex-col gap-3" aria-live="polite">
+    {notifications.map((notification, index) => <Notification key={notification.id ?? index} isOpen message={notification.message} type={notification.type} />)}
+  </ul>;
+}

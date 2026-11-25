@@ -1,80 +1,32 @@
-"use client";
+import Image from 'next/image';
+import Link from 'next/link';
+import { FaArrowRight } from 'react-icons/fa';
 
-import React, { useEffect, useRef } from 'react';
-import "../../styles/Slider/base.css";
-import "../../styles/Slider/demo.css";
-import { Slider } from './demo';
-import { SlArrowLeft, SlArrowRight } from 'react-icons/sl';
-import { FaDotCircle } from 'react-icons/fa';
-import SliderControl from './SliderControl';
-import { Button } from '../Button';
-import SliderListItem from './SliderListItem';
-import Wrapper from '../Wrapper';
-
-interface iSliderProps {
-    // Define your component's props here
+export default function SliderSection() {
+  return (
+    <section className="shop-shell pt-8 md:pt-12" aria-labelledby="home-hero-title">
+      <div className="shop-hero relative overflow-hidden rounded-[2rem] bg-[#f8eee4]">
+        <div className="relative z-10 flex min-h-[520px] flex-col justify-center px-7 py-14 sm:px-12 lg:w-[56%] lg:px-16">
+          <span className="shop-eyebrow">Nishop · escolhas com personalidade</span>
+          <h1 id="home-hero-title" className="mt-6 max-w-[640px] text-[clamp(2.7rem,5.3vw,5.7rem)] font-bold leading-[1.06] tracking-[-0.055em] text-main-regular">
+            Encontra o detalhe que transforma tudo.
+          </h1>
+          <p className="mt-6 max-w-lg text-base leading-7 text-main-medium sm:text-lg">
+            Peças para a casa, presentes e ideias para o dia a dia. Descobre a coleção e escolhe ao teu ritmo.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-5">
+            <Link href="/products" className="shop-button shop-button-primary">
+              Explorar produtos <FaArrowRight aria-hidden="true" className="text-sm" />
+            </Link>
+            <span className="text-sm font-medium text-main-medium">Uma seleção feita para surpreender.</span>
+          </div>
+        </div>
+        <div className="relative min-h-[360px] lg:absolute lg:inset-y-0 lg:right-0 lg:w-[48%]">
+          <div className="absolute inset-8 rounded-[45%] bg-white/40 blur-3xl" aria-hidden="true" />
+          <Image src="/images/candiero.png" alt="Candeeiro de pé da coleção Nishop" fill priority className="shop-hero-image object-contain p-8 lg:p-12" sizes="(max-width: 1024px) 100vw, 48vw" />
+        </div>
+        <div className="pointer-events-none absolute -bottom-20 -right-20 h-72 w-72 rounded-full border border-white/50" aria-hidden="true" />
+      </div>
+    </section>
+  );
 }
-
-const SliderSection: React.FC<iSliderProps> = ({ }: iSliderProps) => {
-    const sliderRef = useRef<HTMLDivElement>(null);
-    let _slider: any
-
-    useEffect(() => {
-        _slider = new Slider({
-            element: sliderRef.current && sliderRef.current,
-        });
-    }, []);
-
-    return (
-        <Wrapper>
-            <div className='absolute left-0 -top-10 w-full h-[400px] bg-base-graybackground z-10'></div>
-            <div className="page-wrapper z-20 my-10" id="wannabedev">
-
-                <div ref={sliderRef} className="slider flex justify-center">
-
-                    <ul className="slider-list">
-
-                        <SliderListItem
-                            product='apple'
-                            description='Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illo ratione nisi perferendis? Nemo in accusamus cupiditate officiis.'
-                            link='#'
-                            img='assets/img/back_apple_002.png'
-                            alt='apple'
-                        />
-
-                        <SliderListItem
-                            product='grapes'
-                            description='Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illo ratione nisi perferendis? Nemo in accusamus cupiditate officiis.'
-                            link='#'
-                            img='assets/img/grapes.png'
-                            alt='grapes'
-                        />
-
-                        <SliderListItem
-                            product='strawberry'
-                            description='Lorem ipsum dolor, sit amet consectetur adipisicing elit. Illo ratione nisi perferendis? Nemo in accusamus cupiditate officiis.'
-                            link='#'
-                            img='assets/img/back_apple_002.png'
-                            alt='strawberry'
-                        />
-                    </ul>
-
-                    <div className="slider__nav-bar flex justify-center self-end mb-3">
-                        <a className="nav-control text-white"> <FaDotCircle /> </a>
-                        <a className="nav-control text-white"> <FaDotCircle /></a>
-                        <a className="nav-control text-white"> <FaDotCircle /></a>
-                    </div>
-
-                    <div className="slider__controls">
-                        <SliderControl dirx={0} icon={SlArrowLeft} action={() => _slider?.goPrev()} />
-                        <SliderControl dirx={1} icon={SlArrowRight} action={() => _slider?.goNext()} />
-                    </div>
-
-                </div>
-
-            </div>
-        </Wrapper>
-    );
-};
-
-export default SliderSection;

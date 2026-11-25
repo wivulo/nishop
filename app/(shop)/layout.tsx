@@ -26,7 +26,7 @@ export default function RootLayout({ children }: iRootLayout) {
     <Providers>
       <html lang="pt">
         <body>
-          <div className={poppins.className + " relative flex flex-col w-full h-auto min-h-screen"}>
+          <div id="top" className={poppins.className + " relative flex flex-col w-full h-auto min-h-screen"}>
             <Notifications />
             <Header />
             {children}

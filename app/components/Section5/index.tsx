@@ -1,69 +1,44 @@
 "use client";
-import React, { useState } from 'react';
-import Wrapper from '../Wrapper';
-import Heading from './Heading';
-import HeadingItem from './HeadingItem';
-import HeadingText from './HeadingText';
-import Body from './body';
+
 import { Product } from '@prisma/client';
-import { useQueryState } from 'nuqs';
+import Link from 'next/link';
+import { useDispatch } from 'react-redux';
+import { openDetail } from '@/lib/redux/Details/detailsSlice';
+import ShopProductTile from '../ShopProductTile';
+import { ProductListSkelton } from '../ProductListSkelton';
+import { useState } from 'react';
 
-interface Section5Props {
-    products: Product[];
-    ispedding?: boolean;
+type Props = { products?: Product[]; ispedding?: boolean };
+
+export default function Section5({ products = [], ispedding }: Props) {
+  const dispatch = useDispatch();
+  const [category, setCategory] = useState('Todos');
+  const categories = ['Todos', ...Array.from(new Set(products.map((product) => product.category).filter(Boolean)))];
+  const visible = category === 'Todos' ? products.slice(0, 8) : products.filter((product) => product.category === category).slice(0, 8);
+
+  return (
+    <section className="shop-shell pb-20 pt-12 md:pb-28" aria-labelledby="collection-heading">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <span className="shop-eyebrow">A coleção</span>
+          <h2 id="collection-heading" className="mt-3 text-3xl font-bold tracking-tight text-main-regular md:text-4xl">Encontra o teu próximo favorito.</h2>
+        </div>
+        <Link href="/products" className="text-sm font-semibold text-main-primary hover:underline">Explorar o catálogo completo</Link>
+      </div>
+      {!ispedding && categories.length > 1 && (
+        <div className="mb-7 flex flex-wrap gap-2" aria-label="Filtrar por categoria">
+          {categories.map((item) => (
+            <button key={item} type="button" onClick={() => setCategory(item)} aria-pressed={category === item} className={`rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors ${category === item ? 'border-main-primary bg-main-primary text-white' : 'border-[#e9ddd2] bg-white text-main-medium hover:border-main-primary hover:text-main-primary'}`}>
+              {item}
+            </button>
+          ))}
+        </div>
+      )}
+      {ispedding ? <ProductListSkelton /> : visible.length > 0 ? (
+        <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {visible.map((product) => <ShopProductTile key={product.id} product={product} onOpen={(item) => dispatch(openDetail(item))} />)}
+        </ul>
+      ) : <p className="rounded-2xl bg-white p-8 text-main-medium">Ainda não há produtos nesta categoria.</p>}
+    </section>
+  );
 }
-
-const emphasisShifted = (values: Product[]) => {
-    const emphasizedProducts = values?.filter((value) => value.Emphasis);
-    const nonEmphasizedProducts = values?.filter((value) => !value.Emphasis);
-    //return [...emphasizedProducts, ...nonEmphasizedProducts];
-    let prods: Product[] = []
-    emphasizedProducts && emphasizedProducts.map(p => prods.push(p))
-    nonEmphasizedProducts && nonEmphasizedProducts.map(p => prods.push(p))
-    return prods
-};
-
-
-const Section5: React.FC<Section5Props> = ({ products, ispedding }) => {
-    const [filteredProducts, setFilteredProducts] = useQueryState('product-category');
-
-    return (
-        <Wrapper className='my-12 px-12'>
-            <div className='flex flex-col gap-12'>
-                <Heading>
-                    <HeadingItem onClick={() => setFilteredProducts("Modern Farmhouse")}>
-                        <HeadingText text='Modern Farmhouse'/>
-                    </HeadingItem>
-
-                    <HeadingItem onClick={() => setFilteredProducts("Eclectic Decor")}>
-                        <HeadingText text='Eclectic Decor'/>
-                    </HeadingItem>
-
-                    <HeadingItem onClick={() => setFilteredProducts("Polka Boho")}>
-                        <HeadingText text='Polka Boho'/>
-                    </HeadingItem>
-
-                    <HeadingItem onClick={() => setFilteredProducts("Minimalist Style")}>
-                        <HeadingText text='Minimalist Style'/>
-                    </HeadingItem>
-
-                    <HeadingItem onClick={() => setFilteredProducts("Anniversary Gift")}>
-                        <HeadingText text='Anniversary Gift'/>
-                    </HeadingItem>
-
-                    <HeadingItem onClick={() => setFilteredProducts("Wedding Gifts")}>
-                        <HeadingText text='Wedding Gifts'/>
-                    </HeadingItem>
-                </Heading>
-
-                <Body
-                    ispedding={ispedding}
-                    products={emphasisShifted(products)} 
-                    filteredProductsUseQueryState={filteredProducts}
-                />
-            </div>
-        </Wrapper>
-    );
-};
-
-export default Section5;

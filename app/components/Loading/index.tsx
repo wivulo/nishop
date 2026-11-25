@@ -1,39 +1,14 @@
 "use client";
 
-import React, { HTMLAttributes, useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ReduxState } from '@/lib/redux';
-import { detailAnimations } from "@/app/components/Loading/animation"
-import { useQueryState } from 'nuqs';
-import { iLoading } from './iLoading';
 import { FaSpinner } from 'react-icons/fa';
+import { iLoading } from './iLoading';
 
-
-
-const Loading: React.FC<iLoading> = ({ isPedding }) => {
-    // const [isLoading, setIsLoading] = useQueryState("isloading")
-
-    const dispatch = useDispatch();
-    const loadingRef = useRef<HTMLDivElement>(null);
-
-
-    const loading = loadingRef.current;
-
-    useEffect(() => {
-        if (isPedding != null)
-            loading && detailAnimations.fadeIndAnimation(loading)
-        else
-            detailAnimations.fadeOutAnimation(loading)
-
-    }, [isPedding]);
-
-    return (
-        <div ref={loadingRef} className={`${isPedding ? "grid" : "hidden"} place-content-center w-screen h-screen fixed left-0 top-0 bg-base-graybackground/40 z-50 overflow-hidden`}>
-            <div className="animate-spin">
-                <FaSpinner className="w-8 h-8 font-semibold text-lg text-main-third" />
-            </div>
-        </div>
-    );
-};
-
-export default Loading;
+export default function Loading({ isPedding }: iLoading) {
+  if (!isPedding) return null;
+  return <div role="status" aria-live="polite" className="fixed inset-0 z-50 grid place-items-center bg-[#1b1714]/35 p-4 backdrop-blur-sm">
+    <div className="flex items-center gap-4 rounded-2xl bg-white px-6 py-5 text-sm font-semibold text-main-regular shadow-2xl">
+      <FaSpinner aria-hidden="true" className="animate-spin text-xl text-main-primary" />
+      A processar…
+    </div>
+  </div>;
+}

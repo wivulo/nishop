@@ -1,71 +1,34 @@
 "use client";
 
-import React, { useReducer } from 'react';
-import Wrapper from "@/app/components/Wrapper";
-import { ProductCarousel } from "@/app/components/ProductCarousel";
-import { Productcard } from "@/app/components/ProductCard";
-import { carouselReducer } from "@/app/components/ProductCarousel/carouselReducer";
-import { iProduct } from '@/app/models/iProduct';
-import { useDispatch, useSelector } from 'react-redux';
-import { decrease, increase } from '@/lib/redux/carousel/carouselSlice';
-import { ReduxState } from '@/lib/redux';
 import { Product } from '@prisma/client';
-import { ProductListSkelton } from '../ProductListSkelton';
+import Link from 'next/link';
+import { FaArrowRight } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import { openDetail } from '@/lib/redux/Details/detailsSlice';
+import ShopProductTile from '../ShopProductTile';
+import { ProductListSkelton } from '../ProductListSkelton';
 
-type Section4Type = {
-  products: Array<Product>,
-  ispedding?: boolean
-}
+type Props = { products?: Product[]; ispedding?: boolean };
 
-const Section4: React.FC<Section4Type> = ({ products, ispedding }) => {
-  //const [scrollLeft, dispatch] = useReducer(carouselReducer, 0);
-  const dispatch = useDispatch()
-
-  const handleMoveScrollRight = (value: number) => {
-    dispatch(increase({ scroll: value }))
-  }
-
-  const handleMoveScrollLeft = (value: number) => {
-    dispatch(decrease({ scroll: value }))
-  }
-  
-      const handleOpenDetail = (product: Product) => {
-          dispatch(openDetail(product));
-      };
+export default function Section4({ products = [], ispedding }: Props) {
+  const dispatch = useDispatch();
+  const featured = products.filter((product) => product.Emphasis).slice(0, 4);
+  const display = featured.length > 0 ? featured : products.slice(0, 4);
 
   return (
-    <Wrapper className="my-12">
-      <ProductCarousel.Root>
-        <ProductCarousel.Heading>
-          <ProductCarousel.Title text="Discover unique hand-picked items." />
-        </ProductCarousel.Heading>
-        <ProductCarousel.Items className="mx-5">
-          {
-            ispedding ?
-            <ProductListSkelton />
-            :
-            products?.map((item: Product) => {
-              if (item.Emphasis === false) {
-                return (
-                  <li key={item.id} className="last-of-type:mr-1 first-of-type:ml-2" onClick={() => handleOpenDetail(item)}>
-                    <Productcard.Root>
-                      <Productcard.Like />
-                      <Productcard.Image src={item.imageSrc} width={500} height={500} alt={item.name} />
-                      <Productcard.Description text={item.description} />
-                      <Productcard.Price price={item.price} />
-                    </Productcard.Root>
-                  </li>
-                )
-              }
-            })
-          }
-        </ProductCarousel.Items>
-        <ProductCarousel.Controls
-          onMoveScrollRight={() => handleMoveScrollRight(200)}
-          onMoveScrollLeft={() => handleMoveScrollLeft(200)} />
-      </ProductCarousel.Root>
-    </Wrapper>
+    <section className="shop-shell py-12 md:py-16" aria-labelledby="featured-heading">
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <span className="shop-eyebrow">Os destaques</span>
+          <h2 id="featured-heading" className="mt-3 text-3xl font-bold tracking-tight text-main-regular md:text-4xl">Feitos para chamar atenção.</h2>
+        </div>
+        <Link href="/products" className="inline-flex items-center gap-2 text-sm font-semibold text-main-primary transition-transform hover:translate-x-1">Ver todos <FaArrowRight aria-hidden="true" /></Link>
+      </div>
+      {ispedding ? <ProductListSkelton /> : display.length > 0 ? (
+        <ul className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {display.map((product) => <ShopProductTile key={product.id} product={product} onOpen={(item) => dispatch(openDetail(item))} />)}
+        </ul>
+      ) : <p className="rounded-2xl bg-white p-8 text-main-medium">Novos produtos em breve.</p>}
+    </section>
   );
 }
-export default Section4;

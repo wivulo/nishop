@@ -2,41 +2,36 @@
 import { NextPage } from 'next';
 import Products from './products';
 import { getProducts } from '@/app/(shop)/getProducts';
-import { useEffect, useState } from 'react';
-import { Product } from '@prisma/client';
-import { Suspense } from "react";
 import { useQuery } from '@tanstack/react-query';
 import { ProductListSkelton } from '@/app/components/ProductListSkelton';
 
 
 const ProductsPage: NextPage = () => {
-    const [pr, setPr] = useState<Product[]>([]);
-
     const {data, isPending} = useQuery({
         queryKey: ["products"],
         queryFn: getProducts
     })
 
     return (
-        <div className='min-h-screen w-full'>
+        <main className='min-h-screen w-full'>
             {
                 isPending ?
                 (
-                    <ProductListSkelton />
+                    <div className="shop-shell py-12"><ProductListSkelton /></div>
                 )
                 :
-                (<div className='flex w-full h-full'>
+                (<div className='w-full'>
                     {
                         data && data.length > 0 ?
                             <Products products={data} />
                             :
-                            (<div className='grid place-content-center w-full h-screen'>
-                                <p className='text-4xl text-text-6 font-bold'>No products</p>
+                            (<div className='shop-shell grid min-h-[50vh] place-content-center text-center'>
+                                <p className='text-2xl font-semibold text-main-regular'>Ainda não há produtos disponíveis.</p>
                             </div>)
                     }
                 </div>)
             }
-        </div>
+        </main>
     );
 };
 

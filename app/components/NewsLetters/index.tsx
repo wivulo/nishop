@@ -1,39 +1,18 @@
-import React from 'react';
-import { Input } from '../CustomInput';
-import { Button } from '../Button';
+import Link from 'next/link';
 import { FaArrowRight } from 'react-icons/fa';
 
-interface iNewsLettersProps {
-    // Define your props here
-}
-
-const NewsLetters: React.FC<iNewsLettersProps> = () => {
-    return (
-        <div className="w-full h-72 bg-[#5959d9] flex flex-col gap-y-10 rounded-sm text-main-white px-28 py-10">
-
-        <div className="flex flex-col gap-y-2">
-            <h2 className="text-xl font-semibold">Yes!</h2>
-            <p className="font-medium">
-                Send me exclusive offers, unique gift ideas,
-                and personalized<br /> tips for shopping and
-                selling on Commerce.
-            </p>
+export default function NewsLetters() {
+  return <section className="shop-shell pb-12" aria-labelledby="shop-cta-heading">
+    <div className="relative overflow-hidden rounded-[2rem] bg-[#302820] px-7 py-12 text-white sm:px-12 md:py-16">
+      <div className="absolute -right-16 -top-28 h-72 w-72 rounded-full border border-white/10" aria-hidden="true" />
+      <div className="absolute -bottom-36 right-28 h-72 w-72 rounded-full border border-white/10" aria-hidden="true" />
+      <div className="relative flex flex-wrap items-center justify-between gap-8">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-[.2em] text-[#f2a56d]">Ainda há mais para descobrir</span>
+          <h2 id="shop-cta-heading" className="mt-4 max-w-xl text-3xl font-bold leading-tight tracking-tight md:text-4xl">A próxima peça favorita pode estar à tua espera.</h2>
         </div>
-
-        <form className="flex flex-col gap-y-4 self-center w-[648px]">
-            <Input.Root className="pl-5">
-                <Input.Input placeholder="Drop Your Email" name='email'/>
-
-                <Button.Root hasbg className="py-2 px-5">
-                    <Button.Text text="Subscribe" />
-                    <Button.Icon icon={FaArrowRight} />
-                </Button.Root>
-            </Input.Root>
-            <p className="text-center underline">First order only, you're ready?</p>
-        </form>
-
+        <Link href="/products" className="shop-button bg-white text-main-regular hover:bg-[#fff0e5]">Explorar catálogo <FaArrowRight aria-hidden="true" /></Link>
+      </div>
     </div>
-    );
-};
-
-export default NewsLetters;
+  </section>;
+}
