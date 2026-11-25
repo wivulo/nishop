@@ -28,6 +28,7 @@ function errorResponse(error: unknown) {
 }
 
 export async function POST(request: Request) {
+  let attemptIdForLog: string | undefined;
   try {
     const body = (await request.json()) as CheckoutBody;
     const bayqiTag = body.bayqiTag?.trim();
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
     if (!attemptId || !/^[A-Za-z0-9._:-]{8,100}$/.test(attemptId)) {
       return jsonNoStore({ message: "A referência da tentativa de pagamento é inválida." }, 400);
     }
+    attemptIdForLog = attemptId;
     if (!Array.isArray(body.items) || body.items.length < 1 || body.items.length > 20) {
       return jsonNoStore({ message: "O carrinho está vazio ou excede o limite de produtos." }, 400);
     }
@@ -70,6 +72,19 @@ export async function POST(request: Request) {
     }
 
     const merchantReference = `NISHOP-${attemptId}`;
+    const items = products.map(product => ({
+      productId: product.id,
+      name: product.name,
+      quantity: quantities.get(product.id) ?? 0,
+      unitPrice: product.price,
+    }));
+
+    await prisma.checkoutAttempt.upsert({
+      where: { attemptId },
+      create: { attemptId, merchantReference, amount, currency: "AOA", status: "CREATING", items },
+      update: { amount, currency: "AOA", status: "CREATING", errorCode: null, items },
+    });
+
     const payment = await createGatewayPayment({
       amount,
       bayqiTag,
@@ -77,8 +92,28 @@ export async function POST(request: Request) {
       idempotencyKey: `nishop-${attemptId}`,
     });
 
+    await prisma.checkoutAttempt.update({
+      where: { attemptId },
+      data: { paymentId: payment.paymentId, status: payment.status, errorCode: null },
+    });
+
     return jsonNoStore({ ...payment, amount, currency: "AOA" }, payment.created ? 201 : 200);
   } catch (error) {
+    if (attemptIdForLog) {
+      try {
+        await prisma.checkoutAttempt.updateMany({
+          where: { attemptId: attemptIdForLog },
+          data: {
+            status: error instanceof GatewayIntegrationError && error.code === "gateway_unavailable"
+              ? "UNKNOWN"
+              : "FAILED",
+            errorCode: error instanceof GatewayIntegrationError ? error.code : "internal_error",
+          },
+        });
+      } catch {
+        console.error("[NishopCheckout] Não foi possível atualizar o registo da tentativa.");
+      }
+    }
     return errorResponse(error);
   }
 }

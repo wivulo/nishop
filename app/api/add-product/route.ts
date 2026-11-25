@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma/prisma';
 import { Product } from '@prisma/client';
+import { isAdminRequest } from '@/lib/admin/auth';
 
 export async function POST(req: Request, res: Response) {
+    if (!isAdminRequest(req)) {
+        return NextResponse.json({ message: 'Sessão de administrador inválida.' }, { status: 401 });
+    }
     const body = await req.json();
     console.log(body);
     const { name, description, price, imageSrc, colors, Emphasis, category}: Product = body;

@@ -39,6 +39,16 @@ const Details: React.FC = () => {
             detail && detailAnimations.expandAnimation(detail, isOpen)
     }, [isOpen]);
 
+    useEffect(() => {
+        if (!isOpen || !product?.id) return;
+        void fetch('/api/analytics/product-view', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: product.id }),
+            keepalive: true,
+        }).catch(() => undefined);
+    }, [isOpen, product?.id]);
+
     if (!isOpen || !product) return null;
 
     return (

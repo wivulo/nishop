@@ -20,7 +20,7 @@ export default function AdminLayout({ children }: iAdminLayout) {
     <Providers>
       <html lang="pt">
         <body>
-          <div className={poppins.className + " relative flex w-screen h-screen"}>
+          <div className={poppins.className + " relative flex min-h-screen w-full"}>
             <Notifications />
             {children}
           </div>

@@ -12,11 +12,11 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  name     String
-  password String
-  photoURL String?
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  photoURL  String?
 }
 
 model Product {
@@ -28,4 +28,29 @@ model Product {
   Emphasis    Boolean
   colors      Json?
   category    String
+}
+
+model CheckoutAttempt {
+  attemptId         String   @id
+  paymentId         String?  @unique
+  merchantReference String   @unique
+  amount            Float
+  currency          String   @default("AOA")
+  status            String   @default("CREATING")
+  errorCode         String?
+  items             Json
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([status, createdAt])
+}
+
+model ProductView {
+  id          Int      @id @default(autoincrement())
+  productId   Int?
+  productName String
+  createdAt   DateTime @default(now())
+
+  @@index([productId, createdAt])
+  @@index([createdAt])
 }

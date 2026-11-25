@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma/prisma";
 import { getGatewayPayment, GatewayIntegrationError } from "@/lib/bayqi/gateway";
 
 export const runtime = "nodejs";
@@ -16,7 +17,16 @@ export async function GET(_request: Request, { params }: { params: { paymentId: 
   }
 
   try {
-    return jsonNoStore(await getGatewayPayment(params.paymentId));
+    const payment = await getGatewayPayment(params.paymentId);
+    try {
+      await prisma.checkoutAttempt.updateMany({
+        where: { paymentId: payment.paymentId },
+        data: { status: payment.status, errorCode: null },
+      });
+    } catch {
+      console.error("[NishopCheckout] Não foi possível sincronizar o estado da tentativa.");
+    }
+    return jsonNoStore(payment);
   } catch (error) {
     if (error instanceof GatewayIntegrationError) {
       return jsonNoStore(

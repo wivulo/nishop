@@ -2,11 +2,20 @@
 
 ## Nishop Management
 
-The management dashboard from `nishop-managment` is served by this Next.js app
-at `/management`. Its static files live under `public/management`; open
-`/management` to use the dashboard. It is the original demo dashboard backed by
-its bundled sample JSON and client-side login; it is not yet connected to the
-Nishop product database and must not be treated as production authentication.
+The authenticated management dashboard is served at `/management`. It manages
+the product catalogue and customer accounts, and shows completed payments,
+checkout attempts, revenue, and product detail views. Configure
+`NISHOP_ADMIN_EMAIL`, `NISHOP_ADMIN_PASSWORD`, and a random
+`NISHOP_ADMIN_SESSION_SECRET` of at least 32 bytes in the deployment platform.
+For example, generate a session secret with `openssl rand -base64 48`.
+
+The dashboard records product views when a product detail is opened and records
+checkout attempts before requesting a Gateway payment. Existing payments from
+before this feature are not backfilled into the dashboard.
+
+The Vercel build runs `prisma migrate deploy` before `next build`, applying
+pending production migrations without running `migrate dev` or resetting the
+database. Keep the Prisma migrations folder in source control.
 
 ## BayQi Gateway checkout (sandbox)
 
