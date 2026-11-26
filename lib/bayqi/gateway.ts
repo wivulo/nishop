@@ -21,6 +21,7 @@ export class GatewayIntegrationError extends Error {
 }
 
 let cachedToken: { value: string; expiresAt: number } | undefined;
+const paymentStatuses = new Set(["CREATED", "PENDING_CUSTOMER", "PROCESSING", "SUCCEEDED", "FAILED", "UNKNOWN"]);
 
 function getConfig() {
   if (process.env.BAYQI_GATEWAY_ENVIRONMENT !== "sandbox") {
@@ -111,7 +112,8 @@ async function getAccessToken() {
 
 export async function createGatewayPayment(input: {
   amount: number;
-  bayqiTag: string;
+  identifierType: "BAYQI_TAG" | "PHONE" | "IUF" | "DOCUMENT";
+  identifier: string;
   merchantReference: string;
   idempotencyKey: string;
 }) {
@@ -130,7 +132,9 @@ export async function createGatewayPayment(input: {
         method: "QIFACIL_REQUEST",
         amount: input.amount,
         currency: "AOA",
-        payer: { bayqiTag: input.bayqiTag },
+        payer: input.identifierType === "BAYQI_TAG"
+          ? { bayqiTag: input.identifier }
+          : { identifierType: input.identifierType, identifier: input.identifier },
         merchantReference: input.merchantReference,
       }),
       cache: "no-store",
@@ -147,7 +151,8 @@ export async function createGatewayPayment(input: {
     created: boolean;
   }>(response);
 
-  if (!response.ok || !payload?.paymentId) {
+  if (!response.ok || !payload?.paymentId || !paymentStatuses.has(payload.status) ||
+      payload.merchantReference !== input.merchantReference) {
     const status = [400, 401, 403, 409, 422].includes(response.status) ? response.status : 502;
     throw new GatewayIntegrationError(
       payload?.error?.message ?? "O Gateway não conseguiu iniciar a cobrança.",
@@ -184,7 +189,7 @@ export async function getGatewayPayment(paymentId: string) {
     confirmedAtUtc: string | null;
   }>(response);
 
-  if (!response.ok || !payload?.paymentId) {
+  if (!response.ok || payload?.paymentId !== paymentId || !paymentStatuses.has(payload.status)) {
     const status = response.status === 404 ? 404 : response.status === 429 ? 429 : 502;
     throw new GatewayIntegrationError(
       payload?.error?.message ?? "O Gateway não conseguiu consultar a cobrança.",

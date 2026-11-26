@@ -33,6 +33,19 @@ The sandbox application must be active, linked to the seller represented by
 the product catalogue, and approved for `QIFACIL_REQUEST`, `payments:create`,
 and `payments:read`. Checkout takes the total from the Nishop product database,
 creates an idempotent payment request, and polls the Gateway for its status.
+The dedicated `/checkout` page offers BayQi Wallet and marks Multicaixa Express
+as coming soon. The buyer can identify the Wallet by BayQi Tag, phone, IUF, or
+identity document. Nishop sends the identifier only to the Gateway; the Gateway
+resolves the last three through its authenticated internal channel to the
+Central API. Deploy the matching Gateway and Central versions before enabling
+those three options.
+
+Register `https://<nishop-domain>/api/bayqi/webhook` as the application webhook
+endpoint in the BayQi partner portal. Store the returned `whsec_...` secret as
+`BAYQI_GATEWAY_WEBHOOK_SECRET` in Nishop's server environment. The endpoint
+verifies the Gateway signature and updates the matching checkout attempt when
+it receives `payment.succeeded`. The checkout also polls the Gateway so a
+delayed webhook does not leave the buyer waiting indefinitely.
 `PENDING_CUSTOMER` means the buyer must approve the request in BayQi Wallet;
 Nishop never collects a PIN or OTP. Only `SUCCEEDED` is treated as a completed
 payment. The Gateway Central/Wallet sandbox flow must be enabled separately.

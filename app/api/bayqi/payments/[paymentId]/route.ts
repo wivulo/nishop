@@ -17,10 +17,16 @@ export async function GET(_request: Request, { params }: { params: { paymentId: 
   }
 
   try {
+    const confirmed = await prisma.checkoutAttempt.findUnique({ where: { paymentId: params.paymentId } });
+    if (confirmed?.status === 'SUCCEEDED') {
+      return jsonNoStore({ paymentId: params.paymentId, status: 'SUCCEEDED',
+        merchantReference: confirmed.merchantReference, amount: confirmed.amount,
+        currency: confirmed.currency });
+    }
     const payment = await getGatewayPayment(params.paymentId);
     try {
       await prisma.checkoutAttempt.updateMany({
-        where: { paymentId: payment.paymentId },
+        where: { paymentId: payment.paymentId, status: { not: 'SUCCEEDED' } },
         data: { status: payment.status, errorCode: null },
       });
     } catch {

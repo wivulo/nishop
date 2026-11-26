@@ -12,6 +12,7 @@ function jsonNoStore(body: unknown, status = 200) {
 
 type CheckoutBody = {
   items?: Array<{ productId?: number; quantity?: number }>;
+  payer?: { identifierType?: string; identifier?: string };
   bayqiTag?: string;
   attemptId?: string;
 };
@@ -30,12 +31,20 @@ function errorResponse(error: unknown) {
 export async function POST(request: Request) {
   let attemptIdForLog: string | undefined;
   try {
-    const body = (await request.json()) as CheckoutBody;
-    const bayqiTag = body.bayqiTag?.trim();
-    const attemptId = body.attemptId?.trim();
+    const body = (await request.json()) as CheckoutBody | null;
+    if (!body || typeof body !== 'object') return jsonNoStore({ message: 'Pedido inválido.' }, 400);
+    const identifierType = body.payer?.identifierType ?? (body.bayqiTag ? "BAYQI_TAG" : undefined);
+    const identifier = body.payer?.identifier ?? body.bayqiTag;
+    const attemptId = typeof body.attemptId === 'string' ? body.attemptId.trim() : undefined;
 
-    if (!bayqiTag || bayqiTag.length > 64 || /[\s\u0000-\u001f\u007f]/.test(bayqiTag)) {
-      return jsonNoStore({ message: "Indica uma BayQi Tag válida." }, 400);
+    if (typeof identifier !== 'string' || typeof identifierType !== 'string' ||
+        identifier.length > 64 || !({
+          BAYQI_TAG: /^@?[A-Za-z0-9._-]{3,63}$/,
+          PHONE: /^(?:\+?244)?9[0-9]{8}$/,
+          IUF: /^[0-8][0-9]{8}$/,
+          DOCUMENT: /^[A-Za-z0-9 /-]{4,32}$/,
+        } as Record<string, RegExp>)[identifierType]?.test(identifier.trim())) {
+      return jsonNoStore({ message: "Indica um identificador BayQi válido." }, 400);
     }
     if (!attemptId || !/^[A-Za-z0-9._:-]{8,100}$/.test(attemptId)) {
       return jsonNoStore({ message: "A referência da tentativa de pagamento é inválida." }, 400);
@@ -47,7 +56,7 @@ export async function POST(request: Request) {
 
     const quantities = new Map<number, number>();
     for (const item of body.items) {
-      if (!Number.isInteger(item.productId) || !Number.isInteger(item.quantity) || item.quantity! < 1 || item.quantity! > 20) {
+      if (!item || !Number.isInteger(item.productId) || !Number.isInteger(item.quantity) || item.quantity! < 1 || item.quantity! > 20) {
         return jsonNoStore({ message: "O carrinho contém quantidades inválidas." }, 400);
       }
       const nextQuantity = (quantities.get(item.productId!) ?? 0) + item.quantity!;
@@ -79,21 +88,25 @@ export async function POST(request: Request) {
       unitPrice: product.price,
     }));
 
-    await prisma.checkoutAttempt.upsert({
+    const existing = await prisma.checkoutAttempt.upsert({
       where: { attemptId },
       create: { attemptId, merchantReference, amount, currency: "AOA", status: "CREATING", items },
-      update: { amount, currency: "AOA", status: "CREATING", errorCode: null, items },
+      update: {},
     });
+    if (existing.amount !== amount || existing.merchantReference !== merchantReference) {
+      return jsonNoStore({ message: "Esta tentativa já pertence a outra compra." }, 409);
+    }
 
     const payment = await createGatewayPayment({
       amount,
-      bayqiTag,
+      identifierType: identifierType as "BAYQI_TAG" | "PHONE" | "IUF" | "DOCUMENT",
+      identifier: identifier.trim(),
       merchantReference,
       idempotencyKey: `nishop-${attemptId}`,
     });
 
-    await prisma.checkoutAttempt.update({
-      where: { attemptId },
+    await prisma.checkoutAttempt.updateMany({
+      where: { attemptId, status: { not: "SUCCEEDED" } },
       data: { paymentId: payment.paymentId, status: payment.status, errorCode: null },
     });
 
@@ -102,7 +115,8 @@ export async function POST(request: Request) {
     if (attemptIdForLog) {
       try {
         await prisma.checkoutAttempt.updateMany({
-          where: { attemptId: attemptIdForLog },
+          where: { attemptId: attemptIdForLog, paymentId: null,
+            status: { in: ["CREATING", "UNKNOWN"] } },
           data: {
             status: error instanceof GatewayIntegrationError && error.code === "gateway_unavailable"
               ? "UNKNOWN"
