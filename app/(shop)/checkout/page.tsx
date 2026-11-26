@@ -33,7 +33,7 @@ const statusText: Record<string, string> = {
 };
 
 const formatMoney = (amount: number) => (Number.isFinite(amount) ? amount : 0).toLocaleString('pt-AO', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const itemsFingerprint = (items: iCartProduct[]) => JSON.stringify(items.map(({ product, quatity }) => ({ productId: product.id, quantity: quatity })).sort((a, b) => a.productId - b.productId));
+const itemsFingerprint = (items: iCartProduct[]) => JSON.stringify(items.map(({ product, quatity }) => ({ productId: product.id ?? 0, quantity: quatity })).sort((a, b) => a.productId - b.productId));
 const checkoutFingerprint = async (cart: string, type: IdentifierType, value: string) => {
   const bytes = new TextEncoder().encode(JSON.stringify({ cart, type, value }));
   const hash = await crypto.subtle.digest('SHA-256', bytes);
@@ -124,6 +124,10 @@ export default function CheckoutPage() {
   const beginPayment = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!products.length || isSubmitting || payment && activeStates.includes(payment.status)) return;
+    if (products.some(({ product }) => !Number.isInteger(product.id) || (product.id ?? 0) <= 0)) {
+      setCheckoutError('O carrinho contém um produto inválido. Atualiza a página e tenta novamente.');
+      return;
+    }
     setCheckoutError('');
     setPollMessage('');
     setIsSubmitting(true);
