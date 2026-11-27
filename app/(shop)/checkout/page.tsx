@@ -14,6 +14,10 @@ type Payment = {
   amount?: number; currency?: string; items: iCartProduct[];
 };
 type SavedCheckout = { cartFingerprint: string; fingerprint: string; attemptId: string; payment?: Payment };
+type PaymentApiResponse = {
+  message?: string; requestId?: string; paymentId?: string; status?: string;
+  merchantReference?: string; amount?: number; currency?: string;
+};
 
 const storageKey = 'nishop-bayqi-checkout-attempt';
 const activeStates = ['CREATED', 'PENDING_CUSTOMER', 'PROCESSING', 'UNKNOWN'];
@@ -38,6 +42,16 @@ const checkoutFingerprint = async (cart: string, type: IdentifierType, value: st
   const bytes = new TextEncoder().encode(JSON.stringify({ cart, type, value }));
   const hash = await crypto.subtle.digest('SHA-256', bytes);
   return Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('');
+};
+const readPaymentResponse = async (response: Response, timeoutMessage: string): Promise<PaymentApiResponse> => {
+  const body = await response.text();
+  if (response.status === 504 || body.includes('FUNCTION_INVOCATION_TIMEOUT')) throw new Error(timeoutMessage);
+  let payload: unknown;
+  try { payload = JSON.parse(body); } catch { /* A plataforma também pode responder em texto. */ }
+  if (payload && typeof payload === 'object' && !Array.isArray(payload)) return payload as PaymentApiResponse;
+  throw new Error(response.ok
+    ? 'O serviço de pagamento devolveu uma resposta inválida. Tenta novamente.'
+    : `O serviço de pagamento está indisponível (HTTP ${response.status}). Tenta novamente.`);
 };
 
 export default function CheckoutPage() {
@@ -99,8 +113,9 @@ export default function CheckoutPage() {
         attempts += 1;
         try {
           const response = await fetch(`/api/bayqi/payments/${encodeURIComponent(payment.paymentId)}`, { cache: 'no-store' });
-          const result = await response.json();
+          const result = await readPaymentResponse(response, 'A consulta do pagamento demorou demasiado. Tenta consultar novamente.');
           if (!response.ok) throw new Error(result.message ?? 'Não foi possível consultar o pagamento.');
+          if (typeof result.status !== 'string') throw new Error('A resposta do estado do pagamento é inválida.');
           if (!active) return;
           setPayment(current => current ? { ...current, status: result.status, amount: result.amount ?? current.amount } : current);
           setPollMessage('');
@@ -148,10 +163,13 @@ export default function CheckoutPage() {
           payer: { identifierType, identifier: normalized }, attemptId,
         }),
       });
-      const result = await response.json();
+      const result = await readPaymentResponse(response, 'O pagamento demorou demasiado a responder. Tenta novamente; a mesma referência será reutilizada para evitar cobranças duplicadas.');
       if (!response.ok) {
         const support = result.requestId ? ` Referência de suporte: ${result.requestId}.` : '';
         throw new Error((result.message ?? 'Não foi possível iniciar o pagamento.') + support);
+      }
+      if (!result.paymentId || !result.status || !result.merchantReference) {
+        throw new Error('O serviço de pagamento devolveu uma resposta incompleta. Tenta novamente.');
       }
       const next: Payment = {
         paymentId: result.paymentId, status: result.status, merchantReference: result.merchantReference,

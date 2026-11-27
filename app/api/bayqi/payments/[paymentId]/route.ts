@@ -4,6 +4,7 @@ import { getGatewayPayment, GatewayIntegrationError } from "@/lib/bayqi/gateway"
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 function jsonNoStore(body: unknown, status = 200) {
   const response = NextResponse.json(body, { status });

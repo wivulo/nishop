@@ -22,6 +22,11 @@ export class GatewayIntegrationError extends Error {
 
 let cachedToken: { value: string; expiresAt: number } | undefined;
 const paymentStatuses = new Set(["CREATED", "PENDING_CUSTOMER", "PROCESSING", "SUCCEEDED", "FAILED", "UNKNOWN"]);
+const gatewayRequestTimeoutMs = 25_000;
+
+function isTimeout(error: unknown): boolean {
+  return error instanceof Error && error.name === "TimeoutError";
+}
 
 function getConfig() {
   if (process.env.BAYQI_GATEWAY_ENVIRONMENT !== "sandbox") {
@@ -82,16 +87,25 @@ async function getAccessToken() {
   });
 
   let response: Response;
+  const startedAt = Date.now();
+  console.info("[NishopCheckout] Gateway pedido iniciado", { operation: "oauth_token" });
   try {
     response = await fetch(new URL("oauth/token", base), {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: form,
       cache: "no-store",
+      signal: AbortSignal.timeout(gatewayRequestTimeoutMs),
     });
-  } catch {
-    throw new GatewayIntegrationError("Não foi possível contactar o Gateway BayQi.", 503, "gateway_unavailable");
+  } catch (error) {
+    throw new GatewayIntegrationError(
+      isTimeout(error) ? "O Gateway demorou demasiado a autenticar a aplicação." : "Não foi possível contactar o Gateway BayQi.",
+      503, "gateway_unavailable",
+    );
   }
+  console.info("[NishopCheckout] Gateway pedido concluído", {
+    operation: "oauth_token", status: response.status, elapsedMs: Date.now() - startedAt,
+  });
 
   const payload = await readJson<GatewayToken & GatewayErrorPayload>(response);
   if (!response.ok || !payload?.access_token) {
@@ -120,6 +134,8 @@ export async function createGatewayPayment(input: {
   const { base } = getConfig();
   const token = await getAccessToken();
   let response: Response;
+  const startedAt = Date.now();
+  console.info("[NishopCheckout] Gateway pedido iniciado", { operation: "create_payment" });
   try {
     response = await fetch(new URL("v1/payments", base), {
       method: "POST",
@@ -138,10 +154,17 @@ export async function createGatewayPayment(input: {
         merchantReference: input.merchantReference,
       }),
       cache: "no-store",
+      signal: AbortSignal.timeout(gatewayRequestTimeoutMs),
     });
-  } catch {
-    throw new GatewayIntegrationError("Não foi possível enviar o pedido ao Gateway BayQi.", 503, "gateway_unavailable");
+  } catch (error) {
+    throw new GatewayIntegrationError(
+      isTimeout(error) ? "O Gateway demorou demasiado a responder ao pedido de pagamento." : "Não foi possível enviar o pedido ao Gateway BayQi.",
+      503, "gateway_unavailable",
+    );
   }
+  console.info("[NishopCheckout] Gateway pedido concluído", {
+    operation: "create_payment", status: response.status, elapsedMs: Date.now() - startedAt,
+  });
 
   const payload = await readJson<GatewayErrorPayload & {
     paymentId: string;
@@ -173,9 +196,13 @@ export async function getGatewayPayment(paymentId: string) {
     response = await fetch(new URL(`v1/payments/${encodeURIComponent(paymentId)}`, base), {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",
+      signal: AbortSignal.timeout(gatewayRequestTimeoutMs),
     });
-  } catch {
-    throw new GatewayIntegrationError("Não foi possível consultar o Gateway BayQi.", 503, "gateway_unavailable");
+  } catch (error) {
+    throw new GatewayIntegrationError(
+      isTimeout(error) ? "O Gateway demorou demasiado a consultar o pagamento." : "Não foi possível consultar o Gateway BayQi.",
+      503, "gateway_unavailable",
+    );
   }
 
   const payload = await readJson<GatewayErrorPayload & {

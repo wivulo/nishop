@@ -50,6 +50,12 @@ delayed webhook does not leave the buyer waiting indefinitely.
 Nishop never collects a PIN or OTP. Only `SUCCEEDED` is treated as a completed
 payment. The Gateway Central/Wallet sandbox flow must be enabled separately.
 
+The payment routes allow up to 60 seconds on Vercel and limit each Gateway
+request to 25 seconds. If a payment request still times out, inspect the Vercel
+function logs for `[NishopCheckout] Etapa iniciada`: the last stage identifies
+whether the delay was in the product database, attempt storage, Gateway call,
+or payment storage. Retrying the same checkout reuses its attempt reference.
+
 Add the Gateway values only after receiving the sandbox secrets. The sanitized
 variable names are listed in `.env.example`.
 

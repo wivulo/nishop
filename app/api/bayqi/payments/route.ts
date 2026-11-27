@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma/prisma";
 import { createGatewayPayment, GatewayIntegrationError } from "@/lib/bayqi/gateway";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 function jsonNoStore(body: unknown, status = 200) {
   const response = NextResponse.json(body, { status });
@@ -30,6 +31,12 @@ function errorResponse(error: unknown) {
 
 export async function POST(request: Request) {
   let attemptIdForLog: string | undefined;
+  const startedAt = Date.now();
+  let stage = "validating_request";
+  const markStage = (nextStage: string) => {
+    stage = nextStage;
+    console.info("[NishopCheckout] Etapa iniciada", { stage, elapsedMs: Date.now() - startedAt });
+  };
   try {
     const body = (await request.json()) as CheckoutBody | null;
     if (!body || typeof body !== 'object') return jsonNoStore({ message: 'Pedido inválido.' }, 400);
@@ -66,6 +73,7 @@ export async function POST(request: Request) {
       quantities.set(item.productId!, nextQuantity);
     }
 
+    markStage("loading_products");
     const products = await prisma.product.findMany({ where: { id: { in: [...quantities.keys()] } } });
     if (products.length !== quantities.size) {
       return jsonNoStore({ message: "Um ou mais produtos já não estão disponíveis." }, 400);
@@ -88,6 +96,7 @@ export async function POST(request: Request) {
       unitPrice: product.price,
     }));
 
+    markStage("saving_attempt");
     const existing = await prisma.checkoutAttempt.upsert({
       where: { attemptId },
       create: { attemptId, merchantReference, amount, currency: "AOA", status: "CREATING", items },
@@ -97,6 +106,8 @@ export async function POST(request: Request) {
       return jsonNoStore({ message: "Esta tentativa já pertence a outra compra." }, 409);
     }
 
+    console.info("[NishopCheckout] Etapa concluída", { stage, elapsedMs: Date.now() - startedAt });
+    markStage("creating_gateway_payment");
     const payment = await createGatewayPayment({
       amount,
       identifierType: identifierType as "BAYQI_TAG" | "PHONE" | "IUF" | "DOCUMENT",
@@ -105,13 +116,20 @@ export async function POST(request: Request) {
       idempotencyKey: `nishop-${attemptId}`,
     });
 
+    console.info("[NishopCheckout] Etapa concluída", { stage, elapsedMs: Date.now() - startedAt });
+    markStage("saving_payment");
     await prisma.checkoutAttempt.updateMany({
       where: { attemptId, status: { not: "SUCCEEDED" } },
       data: { paymentId: payment.paymentId, status: payment.status, errorCode: null },
     });
 
+    console.info("[NishopCheckout] Etapa concluída", { stage, elapsedMs: Date.now() - startedAt });
     return jsonNoStore({ ...payment, amount, currency: "AOA" }, payment.created ? 201 : 200);
   } catch (error) {
+    console.error("[NishopCheckout] Pedido falhou", {
+      stage, elapsedMs: Date.now() - startedAt,
+      code: error instanceof GatewayIntegrationError ? error.code : "internal_error",
+    });
     if (attemptIdForLog) {
       try {
         await prisma.checkoutAttempt.updateMany({
